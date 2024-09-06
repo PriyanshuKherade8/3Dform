@@ -23,7 +23,7 @@ const router = createBrowserRouter([
     element: <ModelList />,
   },
   {
-    path: "/edit-model",
+    path: "/edit-model/:id",
     element: <ModelForm />,
   },
 ]);

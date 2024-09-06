@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   CustomLayout,
   CustomPaper,
@@ -11,7 +11,8 @@ import { useForm, useFieldArray } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import httpClient from "../../Api/HttpClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Routes, Route, useParams } from "react-router-dom";
 
 // Move generateUUID to the top to avoid initialization issues
 const generateUUID = () => {
@@ -39,7 +40,25 @@ const schema = yup.object().shape({
     .required("At least one link is required"),
 });
 
+const fetchModelList = async (id) => {
+  const response = await httpClient.get(`/get_model/${id}`);
+  return response.data;
+};
+
 const ModelForm = () => {
+  let { id } = useParams();
+  console.log("idx", id);
+
+  const {
+    data: modelData,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["model_list", id], // Include `id` in the queryKey for cache invalidation
+    queryFn: () => fetchModelList(id), // Pass `id` to fetchModelList
+    enabled: !!id, // Disable query if `id` is not available
+  });
+
   // Initialize default values for the form without calling the function in the object
   const initialLinks = [
     {

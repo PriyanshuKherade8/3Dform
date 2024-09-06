@@ -154,7 +154,7 @@ const ModelList = () => {
   // Handle edit action
   const handleEdit = (row) => {
     // Navigate to the edit page with the model ID as a parameter
-    navigate(`/edit-model`);
+    navigate(`/edit-model/${row.model_id}`);
   };
 
   // Handle delete action
