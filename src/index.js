@@ -17,6 +17,10 @@ const router = createBrowserRouter([
     path: "/add-form-model",
     element: <ModelForm />,
   },
+  {
+    path: "/add-model-list",
+    element: <>{"add"}</>,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

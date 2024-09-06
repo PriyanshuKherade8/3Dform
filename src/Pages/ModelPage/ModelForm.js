@@ -68,6 +68,7 @@ const ModelForm = () => {
     control,
     name: "links",
   });
+  console.log("errorsone", errors);
 
   // Function to append a new row with default values
   const addRow = () => {

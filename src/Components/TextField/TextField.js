@@ -35,7 +35,7 @@ const TextField = forwardRef(
       capitalize,
       disableMarginTop,
       description,
-      errors,
+      errors, // contains the errors for form fields
       watch,
       numberToWord = false,
       Width,
@@ -49,7 +49,11 @@ const TextField = forwardRef(
     },
     ref
   ) => {
-    console.log("errorscheck", errors);
+    // Access nested error messages for dynamic fields like `links[0].name`
+    const errorMessage = name?.includes("links")
+      ? errors?.links?.[name.split(".")[1]]?.[name.split(".")[2]]?.message
+      : errors?.[name]?.message;
+
     const handleInputChange = (e) => {
       let value = e.target.value;
       e.target.value = capitalize
@@ -98,7 +102,7 @@ const TextField = forwardRef(
               onFocus={onFocus}
               defaultValue={defaultValue}
               value={value}
-              error={errors?.[name]}
+              error={errorMessage} // Pass the error message directly to the input
               readOnly={readOnly}
               proposalRead={proposalRead}
               data-testid={testId}
@@ -121,9 +125,7 @@ const TextField = forwardRef(
                 }}
               ></i>
             )}
-            {errors?.[name] ? (
-              <ErrorMessage message={errors?.[name]?.message} />
-            ) : null}
+            {errorMessage ? <ErrorMessage message={errorMessage} /> : null}
           </div>
         )}
       </InputContainer>
