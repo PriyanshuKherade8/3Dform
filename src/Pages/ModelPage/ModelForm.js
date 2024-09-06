@@ -10,6 +10,8 @@ import Dropdown from "../../Components/Dropdown/Dropdown";
 import { useForm, useFieldArray } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import httpClient from "../../Api/HttpClient";
+import { useMutation } from "@tanstack/react-query";
 
 // Move generateUUID to the top to avoid initialization issues
 const generateUUID = () => {
@@ -76,6 +78,20 @@ const ModelForm = () => {
     });
   };
 
+  const rotateCall = async (payload) => {
+    const response = await httpClient.post("/add_model", payload);
+    return response.data;
+  };
+
+  const {
+    mutate: addModelForm,
+    isLoading: isMutating,
+    error: mutationError,
+    data: allData,
+  } = useMutation({
+    mutationFn: (payload) => rotateCall(payload),
+  });
+
   // Handler for form submission
   const onSubmit = (data) => {
     alert("Form submitted successfully!");
@@ -91,7 +107,7 @@ const ModelForm = () => {
     };
 
     const convertedData = convertPayload(data);
-
+    addModelForm(convertedData);
     console.log("Original payload:", data);
     console.log("Converted payload:", convertedData);
   };
