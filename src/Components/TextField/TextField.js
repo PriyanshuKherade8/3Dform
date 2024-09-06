@@ -4,6 +4,7 @@ import { Tooltip } from "@mui/material";
 import styled from "styled-components";
 import { CustomLabel, TextInput } from "./style";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import { getNestedErrorMessage } from "../../Utils/HelperFunctions/ErrorFunction";
 
 const TextField = forwardRef(
   (
@@ -49,10 +50,8 @@ const TextField = forwardRef(
     },
     ref
   ) => {
-    // Access nested error messages for dynamic fields like `links[0].name`
-    const errorMessage = name?.includes("links")
-      ? errors?.links?.[name.split(".")[1]]?.[name.split(".")[2]]?.message
-      : errors?.[name]?.message;
+    // Use the utility function to get error messages dynamically
+    const errorMessage = getNestedErrorMessage(errors, name);
 
     const handleInputChange = (e) => {
       let value = e.target.value;
