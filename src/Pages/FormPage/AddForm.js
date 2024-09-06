@@ -16,6 +16,7 @@ import Textarea from "../../Components/TextArea/TextArea";
 import TextField from "../../Components/TextField/TextField";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { CustomPaper } from "../../Styles/GlobalStyles/GlobalStyles";
 const CustomCard = styled(Card)({
   width: "60%",
   margin: "auto",
