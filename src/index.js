@@ -6,6 +6,7 @@ import AddForm from "./Pages/FormPage/AddForm";
 import queryClient from "./queryClient.js";
 import { QueryClientProvider } from "@tanstack/react-query";
 import ModelForm from "./Pages/ModelPage/ModelForm.js";
+import ModelList from "./Pages/ModelPage/ModelList.js";
 
 const router = createBrowserRouter([
   {
@@ -18,8 +19,12 @@ const router = createBrowserRouter([
     element: <ModelForm />,
   },
   {
-    path: "/add-model-list",
-    element: <>{"add"}</>,
+    path: "/model-list",
+    element: <ModelList />,
+  },
+  {
+    path: "/edit-model",
+    element: <ModelForm />,
   },
 ]);
 

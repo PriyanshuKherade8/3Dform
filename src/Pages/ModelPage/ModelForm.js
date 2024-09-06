@@ -79,7 +79,7 @@ const ModelForm = () => {
     });
   };
 
-  const rotateCall = async (payload) => {
+  const addModel = async (payload) => {
     const response = await httpClient.post("/add_model", payload);
     return response.data;
   };
@@ -90,7 +90,7 @@ const ModelForm = () => {
     error: mutationError,
     data: allData,
   } = useMutation({
-    mutationFn: (payload) => rotateCall(payload),
+    mutationFn: (payload) => addModel(payload),
   });
 
   // Handler for form submission
