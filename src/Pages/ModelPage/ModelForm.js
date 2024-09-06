@@ -14,7 +14,6 @@ import httpClient from "../../Api/HttpClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Routes, Route, useParams } from "react-router-dom";
 
-// Move generateUUID to the top to avoid initialization issues
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0,
@@ -54,12 +53,11 @@ const ModelForm = () => {
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["model_list", id], // Include `id` in the queryKey for cache invalidation
-    queryFn: () => fetchModelList(id), // Pass `id` to fetchModelList
-    enabled: !!id, // Disable query if `id` is not available
+    queryKey: ["model_list", id],
+    queryFn: () => fetchModelList(id),
+    enabled: !!id,
   });
 
-  // Initialize default values for the form without calling the function in the object
   const initialLinks = [
     {
       link_id: generateUUID(),
@@ -79,7 +77,7 @@ const ModelForm = () => {
       model_id: "",
       model_name: "",
       model_path: "",
-      links: initialLinks, // Use the variable with generated UUID instead of calling the function directly
+      links: initialLinks,
     },
   });
 
@@ -89,7 +87,6 @@ const ModelForm = () => {
   });
   console.log("errorsone", errors);
 
-  // Function to append a new row with default values
   const addRow = () => {
     append({
       link_id: generateUUID(),
