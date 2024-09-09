@@ -4,73 +4,61 @@ import {
   CustomPaper,
   CustomTypographyForTitle,
 } from "../../Styles/GlobalStyles/GlobalStyles";
-import { useQuery } from "@tanstack/react-query";
-import httpClient from "../../Api/HttpClient";
+import { Button, IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
+import { useGetModelListData } from "./ModelServices";
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { useGetModelListData } from "./ModelServices";
 
 const ModelList = () => {
-  const navigate = useNavigate(); // Use the navigate hook
-
-  const fetchModelList = async () => {
-    const response = await httpClient.get("/get_model_list");
-    return response.data;
-  };
+  const navigate = useNavigate();
 
   const { data: modelData, error, isLoading } = useGetModelListData();
 
-  // Ensure data is always an array
   const data = useMemo(
     () => modelData?.data?.modelList?.map(({ id, ...rest }) => rest) || [],
     [modelData]
   );
 
-  // Handle edit action
   const handleEdit = (row) => {
-    // Navigate to the edit page with the model ID as a parameter
     navigate(`/edit-model/${row.model_id}`);
   };
 
-  // Handle delete action
   const handleDelete = (row) => {
-    // Navigate to the delete page with the model ID as a parameter
-    // navigate(`/delete-model/${row.model_id}`);
+    // Implement delete action or navigate to the delete page
   };
 
-  // Columns for the table, including a custom action column
+  // Columns for the table
   const columns = useMemo(
     () => [
       {
-        accessorKey: "model_id", // Accessor for model_id
+        accessorKey: "model_id",
         header: "Model ID",
         size: 300,
       },
       {
-        accessorKey: "model_name", // Accessor for model_name
+        accessorKey: "model_name",
         header: "Model Name",
         size: 300,
       },
       {
         header: "Actions",
-        id: "actions", // Custom column for actions
+        id: "actions",
         size: 100,
         Cell: ({ row }) => (
           <>
             <IconButton
-              color="primary"
+              style={{ color: "#227B94" }}
               onClick={() => handleEdit(row.original)}
             >
               <EditIcon />
             </IconButton>
             <IconButton
-              color="secondary"
+              style={{ color: "#A04747" }}
               onClick={() => handleDelete(row.original)}
             >
               <DeleteIcon />
@@ -82,27 +70,57 @@ const ModelList = () => {
     []
   );
 
+  // Define the table settings
   const table = useMaterialReactTable({
     columns,
     data: data.length ? data : [],
-    enableColumnFilters: false, // Disable column filters
-    enableGlobalFilter: false, // Disable global search filter
-    enableColumnResizing: false, // Disable column resizing
-    enableDensityToggle: false, // Disable toggle density option
-    enableFullScreenToggle: false, // Disable full screen option
-    enableHiding: false, // Disable the "Show/Hide Columns" option
-    renderTopToolbar: false, // Hide the toolbar to remove the empty space
+    enableColumnFilters: false,
+    enableGlobalFilter: false,
+    enableColumnResizing: false,
+    enableDensityToggle: false,
+    enableFullScreenToggle: false,
+    enableHiding: false,
+    renderTopToolbarCustomActions: () => (
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        onClick={() => navigate("/add-form-model")}
+        sx={{
+          marginLeft: "auto",
+          backgroundColor: "#16325B",
+          color: "#F5F5F5",
+          fontSize: "12px",
+          padding: "7px",
+          fontWeight: "600",
+        }}
+      >
+        Add New Model
+      </Button>
+    ),
+    muiTableHeadCellProps: {
+      sx: {
+        backgroundColor: "#16325B",
+        color: "#F5F5F5",
+      },
+    },
   });
 
   return (
-    <>
-      <CustomLayout>
-        <CustomPaper variant="outlined">
-          <CustomTypographyForTitle>{"Model List"}</CustomTypographyForTitle>
-          <MaterialReactTable table={table} />
-        </CustomPaper>
-      </CustomLayout>
-    </>
+    <CustomLayout variant={"outlined"}>
+      <CustomPaper variant="outlined">
+        <CustomTypographyForTitle
+          style={{
+            color: "#16325B",
+            fontWeight: "700",
+            padding: "5px",
+          }}
+        >
+          {"Model List"}
+        </CustomTypographyForTitle>
+      </CustomPaper>
+      <MaterialReactTable table={table} />
+    </CustomLayout>
   );
 };
 

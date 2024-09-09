@@ -3,6 +3,9 @@ import {
   CustomLayout,
   CustomPaper,
   CustomTypographyForTitle,
+  DeleteColor,
+  PrimaryColor,
+  TextColor,
 } from "../../Styles/GlobalStyles/GlobalStyles";
 import { Box, Button, CardActions, Grid } from "@mui/material";
 import TextField from "../../Components/TextField/TextField";
@@ -176,9 +179,18 @@ const ModelForm = () => {
   return (
     <CustomLayout>
       <CustomPaper variant="outlined">
-        <CustomTypographyForTitle>
+        <CustomTypographyForTitle
+          style={{
+            color: PrimaryColor,
+            fontWeight: "700",
+            padding: "5px",
+          }}
+        >
           {!!id ? "Update model form" : "Add model form"}
         </CustomTypographyForTitle>
+      </CustomPaper>
+
+      <CustomPaper variant="outlined">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={1}>
             <Grid item xs={12} md={3}>
@@ -290,9 +302,12 @@ const ModelForm = () => {
                           <Button
                             type="button"
                             variant="outlined"
-                            color="error"
                             size="small"
                             onClick={() => remove(index)}
+                            style={{
+                              backgroundColor: DeleteColor,
+                              color: TextColor,
+                            }}
                           >
                             Remove
                           </Button>
@@ -307,6 +322,7 @@ const ModelForm = () => {
                             variant="contained"
                             onClick={addRow}
                             size="small"
+                            style={{ backgroundColor: PrimaryColor }}
                           >
                             Add
                           </Button>
@@ -321,8 +337,13 @@ const ModelForm = () => {
 
           {/* Submit Button */}
           <CardActions style={{ justifyContent: "flex-end" }}>
-            <Button variant="contained" type="submit" size="small">
-              {!!id ? "Update" : "Add"}
+            <Button
+              variant="contained"
+              type="submit"
+              size="small"
+              style={{ backgroundColor: PrimaryColor }}
+            >
+              {!!id ? "Update Model" : "Add Model"}
             </Button>
           </CardActions>
         </form>

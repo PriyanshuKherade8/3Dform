@@ -11,16 +11,12 @@ import ModelList from "./Pages/ModelPage/ModelList.js";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AddForm />,
+    element: <ModelList />,
     // errorElement: <ErrorPage />,
   },
   {
     path: "/add-form-model",
     element: <ModelForm />,
-  },
-  {
-    path: "/model-list",
-    element: <ModelList />,
   },
   {
     path: "/edit-model/:id",
