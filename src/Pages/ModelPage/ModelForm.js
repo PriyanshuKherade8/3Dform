@@ -7,7 +7,19 @@ import {
   PrimaryColor,
   TextColor,
 } from "../../Styles/GlobalStyles/GlobalStyles";
-import { Box, Button, CardActions, Grid } from "@mui/material";
+import {
+  Box,
+  Button,
+  CardActions,
+  Grid,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+} from "@mui/material";
 import TextField from "../../Components/TextField/TextField";
 import Dropdown from "../../Components/Dropdown/Dropdown";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -57,7 +69,6 @@ const ModelForm = () => {
 
   const { data: modelDataById, error, isLoading } = useGetModelDataById(id);
   const modelData = modelDataById?.data;
-  console.log("pp", modelData);
 
   const initialLinks = [
     {
@@ -109,7 +120,6 @@ const ModelForm = () => {
   } = useUpdateModelData();
 
   const onSubmit = (data) => {
-    console.log("hh", data);
     alert("Form submitted successfully!");
 
     const convertPayload = (data) => {
@@ -257,93 +267,104 @@ const ModelForm = () => {
             </Grid>
 
             {/* Dynamic Link Fields */}
-            <Box style={{ padding: "8px", width: "100%" }}>
-              {fields.map((field, index) => (
-                <Grid container spacing={1} key={field.id}>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      id={`links.${index}.link_id`}
-                      label="Link ID"
-                      defaultValue={field.link_id}
-                      isRequired={true}
-                      {...register(`links.${index}.link_id`)}
-                      errors={errors}
-                      disabled
-                      readOnly={true}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      id={`links.${index}.xid`}
-                      label="XID"
-                      defaultValue={field.xid}
-                      isRequired={true}
-                      {...register(`links.${index}.xid`)}
-                      errors={errors}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      id={`links.${index}.name`}
-                      label="Name"
-                      defaultValue={field.name}
-                      isRequired={true}
-                      {...register(`links.${index}.name`)}
-                      errors={errors}
-                    />
-                  </Grid>
-
-                  {/* Add/Remove Buttons aligned to the right */}
-                  <Grid item xs={12}>
-                    <Grid container justifyContent="flex-end" spacing={2}>
-                      {/* Remove Button - Only show if there's more than one row */}
-                      {fields.length !== 1 && (
-                        <Grid item>
-                          <Button
-                            type="button"
-                            variant="outlined"
-                            size="small"
-                            onClick={() => remove(index)}
-                            style={{
-                              backgroundColor: DeleteColor,
-                              color: TextColor,
-                            }}
-                          >
-                            Remove
-                          </Button>
-                        </Grid>
-                      )}
-
-                      {/* Add Button only on the last row */}
-                      {fields.length - 1 === index && (
-                        <Grid item>
-                          <Button
-                            type="button"
-                            variant="contained"
-                            onClick={addRow}
-                            size="small"
-                            style={{ backgroundColor: PrimaryColor }}
-                          >
-                            Add
-                          </Button>
-                        </Grid>
-                      )}
-                    </Grid>
-                  </Grid>
-                </Grid>
-              ))}
+            <Box style={{ padding: "16px", width: "92%" }}>
+              <Typography variant="h6" style={{ marginBottom: "16px" }}>
+                Links
+              </Typography>
+              <TableContainer component={Paper} variant="outlined">
+                <Table>
+                  <TableBody>
+                    {/* Table Header */}
+                    <TableRow>
+                      <TableCell>
+                        <Typography variant="subtitle2">Link ID</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="subtitle2">XID</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="subtitle2">Name</Typography>
+                      </TableCell>
+                      <TableCell>
+                        {/* Empty cell for actions (Add/Remove) */}
+                      </TableCell>
+                    </TableRow>
+                    {fields.map((field, index) => (
+                      <TableRow key={field.id}>
+                        <TableCell>
+                          <TextField
+                            id={`links.${index}.link_id`}
+                            defaultValue={field.link_id}
+                            {...register(`links.${index}.link_id`)}
+                            errors={errors}
+                            disabled
+                            readOnly={true}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <TextField
+                            id={`links.${index}.xid`}
+                            defaultValue={field.xid}
+                            {...register(`links.${index}.xid`)}
+                            errors={errors}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <TextField
+                            id={`links.${index}.name`}
+                            defaultValue={field.name}
+                            {...register(`links.${index}.name`)}
+                            errors={errors}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Grid container justifyContent="flex-end" spacing={2}>
+                            {fields.length !== 1 && (
+                              <Grid item>
+                                <Button
+                                  type="button"
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => remove(index)}
+                                  style={{
+                                    backgroundColor: DeleteColor,
+                                    color: TextColor,
+                                  }}
+                                >
+                                  Remove Links
+                                </Button>
+                              </Grid>
+                            )}
+                            {fields.length - 1 === index && (
+                              <Grid item>
+                                <Button
+                                  type="button"
+                                  variant="contained"
+                                  onClick={addRow}
+                                  size="small"
+                                  style={{ backgroundColor: PrimaryColor }}
+                                >
+                                  Add Links
+                                </Button>
+                              </Grid>
+                            )}
+                          </Grid>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Box>
           </Grid>
 
-          {/* Submit Button */}
           <CardActions style={{ justifyContent: "flex-end" }}>
             <Button
-              variant="contained"
               type="submit"
-              size="small"
+              variant="contained"
               style={{ backgroundColor: PrimaryColor }}
             >
-              {!!id ? "Update Model" : "Add Model"}
+              {!!id ? "Update" : "Submit"}
             </Button>
           </CardActions>
         </form>
