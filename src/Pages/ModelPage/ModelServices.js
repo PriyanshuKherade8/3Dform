@@ -43,6 +43,7 @@ export const useGetModelDataById = (id) => {
   const { data, error, isLoading } = useQuery({
     queryKey: ["model_data_by_id"],
     queryFn: () => httpClient.get(`/get_model/${id}`),
+    enabled: !!id,
   });
   return { data, error, isLoading };
 };
