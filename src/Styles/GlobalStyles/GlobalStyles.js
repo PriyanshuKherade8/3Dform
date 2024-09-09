@@ -18,7 +18,7 @@ export const CustomTypographyForTitle = styled(Typography)(() => ({
 }));
 
 export const CustomLayout = styled(Box)(() => ({
-  padding: "15px",
+  // padding: "15px",
 }));
 
 export const PrimaryColor = "#16325B";
