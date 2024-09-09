@@ -47,10 +47,7 @@ export default function AddForm() {
 
   const onSubmit = (data) => {
     alert("submitted");
-    console.log("em", data); // Handle form submission data here
   };
-
-  console.log("errors", errors);
 
   const arrayone = [
     { label: "xyz", value: 1 },

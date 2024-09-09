@@ -59,7 +59,6 @@ function Dropdown({
   setDistrictDropDownData,
   menuPortalTarget,
 }) {
-  console.log("iu", errors);
   const selectRef = useRef();
   const [inputFocus, setInputFocus] = useState(false);
   const borderColor = errors?.[id]
