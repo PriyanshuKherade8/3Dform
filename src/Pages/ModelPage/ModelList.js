@@ -14,6 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useGetModelListData } from "./ModelServices";
 
 const ModelList = () => {
   const navigate = useNavigate(); // Use the navigate hook
@@ -23,18 +24,11 @@ const ModelList = () => {
     return response.data;
   };
 
-  const {
-    data: modelData,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["model_list"],
-    queryFn: fetchModelList,
-  });
+  const { data: modelData, error, isLoading } = useGetModelListData();
 
   // Ensure data is always an array
   const data = useMemo(
-    () => modelData?.modelList?.map(({ id, ...rest }) => rest) || [],
+    () => modelData?.data?.modelList?.map(({ id, ...rest }) => rest) || [],
     [modelData]
   );
 

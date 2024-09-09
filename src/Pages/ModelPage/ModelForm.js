@@ -14,6 +14,11 @@ import httpClient from "../../Api/HttpClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Routes, Route, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import {
+  useAddModelData,
+  useGetModelDataById,
+  useUpdateModelData,
+} from "./ModelServices";
 
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -42,26 +47,14 @@ const schema = yup.object().shape({
     .required("At least one link is required"),
 });
 
-const fetchModelList = async (id) => {
-  const response = await httpClient.get(`/get_model/${id}`);
-  return response.data;
-};
-
 const ModelForm = () => {
   let { id } = useParams();
   const location = useLocation();
   console.log("idx", id, location?.pathname);
 
-  const {
-    data: modelData,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["model_data", id],
-    queryFn: () => fetchModelList(id),
-    enabled: !!id,
-  });
-  console.log("modelData", modelData);
+  const { data: modelDataById, error, isLoading } = useGetModelDataById(id);
+  const modelData = modelDataById?.data;
+  console.log("pp", modelData);
 
   const initialLinks = [
     {
@@ -100,33 +93,17 @@ const ModelForm = () => {
     });
   };
 
-  const addModel = async (payload) => {
-    const response = await httpClient.post("/add_model", payload);
-    return response.data;
-  };
-
-  const updateModelCall = async (payload) => {
-    const response = await httpClient.post("/modify_model", payload);
-    return response.data;
-  };
-
   const {
     mutate: addModelForm,
-    isLoading: isMutating,
-    error: mutationError,
-    data: allData,
-  } = useMutation({
-    mutationFn: (payload) => addModel(payload),
-  });
+    error: modelAddError,
+    data: modelAddData,
+  } = useAddModelData();
 
   const {
     mutate: updateModel,
-    // isLoading: isMutating,
-    // error: mutationError,
-    // data: allData,
-  } = useMutation({
-    mutationFn: (payload) => updateModelCall(payload),
-  });
+    error: modelUpdateError,
+    data: modelUpdateData,
+  } = useUpdateModelData();
 
   const onSubmit = (data) => {
     console.log("hh", data);
