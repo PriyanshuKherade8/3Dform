@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import httpClient from "../../Api/HttpClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Routes, Route, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -27,6 +28,8 @@ const schema = yup.object().shape({
   model_id: yup.string().required("Model ID is required"),
   model_name: yup.string().required("Model Name is required"),
   model_path: yup.string().required("Model Path is required"),
+  user_id: yup.mixed().required("User id is required"),
+  project_id: yup.mixed().required("Project id is required"),
   links: yup
     .array()
     .of(
@@ -46,21 +49,23 @@ const fetchModelList = async (id) => {
 
 const ModelForm = () => {
   let { id } = useParams();
-  console.log("idx", id);
+  const location = useLocation();
+  console.log("idx", id, location?.pathname);
 
   const {
     data: modelData,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["model_list", id],
+    queryKey: ["model_data", id],
     queryFn: () => fetchModelList(id),
     enabled: !!id,
   });
+  console.log("modelData", modelData);
 
   const initialLinks = [
     {
-      link_id: generateUUID(),
+      link_id: !!id ? "" : generateUUID(),
       xid: "",
       name: "",
     },
@@ -70,6 +75,7 @@ const ModelForm = () => {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -81,11 +87,10 @@ const ModelForm = () => {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: "links",
   });
-  console.log("errorsone", errors);
 
   const addRow = () => {
     append({
@@ -100,6 +105,11 @@ const ModelForm = () => {
     return response.data;
   };
 
+  const updateModelCall = async (payload) => {
+    const response = await httpClient.post("/modify_model", payload);
+    return response.data;
+  };
+
   const {
     mutate: addModelForm,
     isLoading: isMutating,
@@ -109,30 +119,89 @@ const ModelForm = () => {
     mutationFn: (payload) => addModel(payload),
   });
 
-  // Handler for form submission
+  const {
+    mutate: updateModel,
+    // isLoading: isMutating,
+    // error: mutationError,
+    // data: allData,
+  } = useMutation({
+    mutationFn: (payload) => updateModelCall(payload),
+  });
+
   const onSubmit = (data) => {
+    console.log("hh", data);
     alert("Form submitted successfully!");
 
     const convertPayload = (data) => {
       return {
-        ...data,
-        links: data.links.map((link) => ({
-          ...link,
-          xid: link.xid.split(",").map((id) => id.trim()), // Convert comma-separated XID string to array
-        })),
+        model_item: {
+          ...data,
+          project_id: data?.project_id?.value,
+          user_id: data?.user_id?.value,
+          links: data.links.map((link) => ({
+            ...link,
+            xid: link.xid.split(",").map((id) => id.trim()),
+          })),
+        },
       };
     };
 
+    const convertPayloadForUpdate = (data) => {
+      return {
+        model_id: data?.model_id,
+        item: {
+          ...(({ model_id, ...rest }) => rest)(data),
+          project_id: data?.project_id?.value,
+          user_id: data?.user_id?.value,
+          links: data.links.map((link) => ({
+            ...link,
+            xid: link.xid.split(",").map((id) => id.trim()),
+          })),
+        },
+      };
+    };
+
+    const updateModelData = convertPayloadForUpdate(data);
     const convertedData = convertPayload(data);
-    addModelForm(convertedData);
+    !!id ? updateModel(updateModelData) : addModelForm(convertedData);
     console.log("Original payload:", data);
-    console.log("Converted payload:", convertedData);
+    console.log("convertPayloadForUpdate", updateModelData);
   };
+
+  useEffect(() => {
+    if (!!id && !!modelData) {
+      // Set the simple fields
+      setValue("model_id", modelData?.model?.model_id);
+      setValue("model_name", modelData?.model?.model_name);
+      setValue("model_path", modelData?.model?.model_path);
+      setValue("project_id", {
+        label: modelData?.model?.project_id,
+        value: modelData?.model?.project_id,
+      });
+      setValue("user_id", {
+        label: modelData?.model?.user_id,
+        value: modelData?.model?.user_id,
+      });
+
+      // Replace the links in the form with those from modelData
+      if (modelData?.model?.links?.length) {
+        replace(
+          modelData.model.links.map((link) => ({
+            link_id: link.link_id,
+            xid: Array.isArray(link.xid) ? link.xid.join(",") : link.xid, // Convert array to comma-separated string if needed
+            name: link.name,
+          }))
+        );
+      }
+    }
+  }, [modelData, id, setValue, replace]);
 
   return (
     <CustomLayout>
       <CustomPaper variant="outlined">
-        <CustomTypographyForTitle>{"Add model form"}</CustomTypographyForTitle>
+        <CustomTypographyForTitle>
+          {!!id ? "Update model form" : "Add model form"}
+        </CustomTypographyForTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={1}>
             <Grid item xs={12} md={3}>
@@ -164,8 +233,8 @@ const ModelForm = () => {
                 isRequired={true}
                 control={control}
                 selectObj={[
-                  { label: "xyz", value: 1 },
-                  { label: "abc", value: 2 },
+                  { label: "xyz", value: "1" },
+                  { label: "abc", value: "2" },
                 ]}
                 errors={errors}
                 onInput={true}
@@ -180,8 +249,8 @@ const ModelForm = () => {
                 isRequired={true}
                 control={control}
                 selectObj={[
-                  { label: "xyz", value: 1 },
-                  { label: "abc", value: 2 },
+                  { label: "xyz", value: "1" },
+                  { label: "abc", value: "2" },
                 ]}
                 errors={errors}
                 onInput={true}
@@ -211,6 +280,7 @@ const ModelForm = () => {
                       {...register(`links.${index}.link_id`)}
                       errors={errors}
                       disabled
+                      readOnly={true}
                     />
                   </Grid>
                   <Grid item xs={12} md={4}>
@@ -275,7 +345,7 @@ const ModelForm = () => {
           {/* Submit Button */}
           <CardActions style={{ justifyContent: "flex-end" }}>
             <Button variant="contained" type="submit" size="small">
-              Submit
+              {!!id ? "Update" : "Add"}
             </Button>
           </CardActions>
         </form>
