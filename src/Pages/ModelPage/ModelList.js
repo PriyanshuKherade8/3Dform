@@ -57,12 +57,12 @@ const ModelList = () => {
             >
               <EditIcon />
             </IconButton>
-            <IconButton
+            {/* <IconButton
               style={{ color: "#A04747" }}
               onClick={() => handleDelete(row.original)}
             >
               <DeleteIcon />
-            </IconButton>
+            </IconButton> */}
           </>
         ),
       },

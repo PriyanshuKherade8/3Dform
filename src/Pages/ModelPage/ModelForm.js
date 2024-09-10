@@ -120,8 +120,6 @@ const ModelForm = () => {
   } = useUpdateModelData();
 
   const onSubmit = (data) => {
-    alert("Form submitted successfully!");
-
     const convertPayload = (data) => {
       return {
         model_item: {

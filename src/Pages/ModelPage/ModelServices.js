@@ -1,14 +1,28 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import httpClient from "../../Api/HttpClient";
 import queryClient from "../../queryClient";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 export const useAddModelData = () => {
+  const navigate = useNavigate();
   const { mutate, isLoading, data, error } = useMutation({
     mutationFn: async (payload) => {
       const response = await httpClient.post("/add_model", payload);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (data?.message) {
+        Swal.fire({
+          icon: "success",
+          title: "Model data added successfully",
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result?.isConfirmed) {
+            navigate(`/`);
+          }
+        });
+      }
       queryClient.invalidateQueries(["model_list"]);
     },
   });
@@ -17,12 +31,24 @@ export const useAddModelData = () => {
 };
 
 export const useUpdateModelData = () => {
+  const navigate = useNavigate();
   const { mutate, isLoading, data, error } = useMutation({
     mutationFn: async (payload) => {
       const response = await httpClient.post("/modify_model", payload);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (data?.message) {
+        Swal.fire({
+          icon: "success",
+          title: "Model data updated successfully",
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result?.isConfirmed) {
+            navigate(`/`);
+          }
+        });
+      }
       queryClient.invalidateQueries(["model_list"]);
     },
   });
