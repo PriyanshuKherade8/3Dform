@@ -70,6 +70,17 @@ const schema = yup.object().shape({
       })
     )
     .required("At least one control is required"),
+  cameras: yup.array().of(
+    yup.object().shape({
+      camera_id: yup.string().required("camera id is required"),
+      camera_type: yup.string().required("camera type is required"),
+      camera_fov: yup.string().required("camera fov is required"),
+      camera_near: yup.string().required("camera near is required"),
+      camera_far: yup.string().required("camera far is required"),
+      camera_position: yup.string().required("camera position is required"),
+      is_default: yup.string().required("camera default is required"),
+    })
+  ),
 });
 
 const ExperienceForm = () => {
@@ -97,6 +108,18 @@ const ExperienceForm = () => {
     },
   ];
 
+  const initialCameras = [
+    {
+      camera_id: "",
+      camera_type: "",
+      camera_fov: "",
+      camera_near: "",
+      camera_far: "",
+      camera_position: "",
+      is_default: "",
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -110,6 +133,7 @@ const ExperienceForm = () => {
       environment: "",
       viewport: initialLinks,
       controls: initialControls,
+      cameras: initialCameras,
     },
   });
 
@@ -127,6 +151,11 @@ const ExperienceForm = () => {
       };
     }
   );
+
+  const booleanList = [
+    { label: "True", value: "true" },
+    { label: "False", value: "false" },
+  ];
 
   // Field array for dynamic viewport fields
   const {
@@ -146,6 +175,16 @@ const ExperienceForm = () => {
   } = useFieldArray({
     control,
     name: "controls",
+  });
+
+  // Field array for dynamic control fields
+  const {
+    fields: camerasFields,
+    append: appendCameras,
+    remove: removeCameras,
+  } = useFieldArray({
+    control,
+    name: "cameras",
   });
 
   // Add new row functions for both viewports and controls
@@ -168,6 +207,18 @@ const ExperienceForm = () => {
       control_id: "",
       is_control_active: "",
       default_value: "",
+    });
+  };
+
+  const addCameraRow = () => {
+    appendCameras({
+      camera_id: "",
+      camera_type: "",
+      camera_fov: "",
+      camera_near: "",
+      camera_far: "",
+      camera_position: "",
+      is_default: "",
     });
   };
 
@@ -452,6 +503,259 @@ const ExperienceForm = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+          </Box>
+
+          {/* Cameras Section */}
+          <Box mt={3}>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Cameras</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <TableContainer component={Paper} variant="outlined">
+              <Table>
+                <TableBody>
+                  {/* Table Header */}
+                  <TableRow>
+                    <TableCell>Camera Id</TableCell>
+                    <TableCell>Camera Type</TableCell>
+                    <TableCell>Camera Fov</TableCell>
+                    <TableCell>Camera Near</TableCell>
+                    <TableCell>Camera Far</TableCell>
+                    <TableCell>Camera Position</TableCell>
+                    <TableCell>Camera is default</TableCell>
+                    <TableCell>{/* Action Buttons */}</TableCell>
+                  </TableRow>
+
+                  {camerasFields.map((field, index) => (
+                    <TableRow key={field.id}>
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.camera_id`}
+                          {...register(`cameras.${index}.camera_id`)}
+                          defaultValue={field.camera_id}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.camera_type`}
+                          {...register(`cameras.${index}.camera_type`)}
+                          defaultValue={field.camera_type}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.camera_fov`}
+                          {...register(`cameras.${index}.camera_fov`)}
+                          defaultValue={field.camera_fov}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.camera_near`}
+                          {...register(`cameras.${index}.camera_near`)}
+                          defaultValue={field.camera_near}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.camera_far`}
+                          {...register(`cameras.${index}.camera_far`)}
+                          defaultValue={field.camera_far}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.camera_position`}
+                          {...register(`cameras.${index}.camera_position`)}
+                          defaultValue={field.camera_position}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.is_default`}
+                          {...register(`cameras.${index}.is_default`)}
+                          defaultValue={field.is_default}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Grid container justifyContent="flex-end" spacing={1}>
+                          {camerasFields.length > 1 && (
+                            <Grid item>
+                              <Button
+                                type="button"
+                                variant="outlined"
+                                size="small"
+                                onClick={() => removeCameras(index)}
+                                style={{
+                                  backgroundColor: DeleteColor,
+                                  color: TextColor,
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            </Grid>
+                          )}
+                          {camerasFields.length - 1 === index && (
+                            <Grid item>
+                              <Button
+                                type="button"
+                                variant="contained"
+                                onClick={addCameraRow}
+                                style={{ backgroundColor: PrimaryColor }}
+                                size="small"
+                              >
+                                Add
+                              </Button>
+                            </Grid>
+                          )}
+                        </Grid>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          {/* Orbit Control */}
+          <Box>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Orbit Control</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <CustomPaper variant="outlined">
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={3}>
+                  <Dropdown
+                    id="enabled"
+                    label="Enabled"
+                    placeholder="Select"
+                    control={control}
+                    selectObj={booleanList}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Dropdown
+                    id="auto_rotate"
+                    label="Auto Rotate"
+                    placeholder="Select"
+                    control={control}
+                    selectObj={booleanList}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Dropdown
+                    id="enable_pan"
+                    label="Enable Pan"
+                    placeholder="Select"
+                    control={control}
+                    selectObj={booleanList}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Dropdown
+                    id="enable_rotate"
+                    label="Enable Rotate"
+                    placeholder="Select"
+                    control={control}
+                    selectObj={booleanList}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Dropdown
+                    id="enable_zoom"
+                    label="Enable Zoom"
+                    placeholder="Select"
+                    control={control}
+                    selectObj={booleanList}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="max_azimuth_angle"
+                    placeholder="Enter Max Azimuth Angle"
+                    label="Max Azimuth Angle"
+                    isRequired={true}
+                    {...register("max_azimuth_angle")}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="min_azimuth_angle"
+                    placeholder="Enter Min Azimuth Angle"
+                    label="Min Azimuth Angle"
+                    isRequired={true}
+                    {...register("min_azimuth_angle")}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="max_polar_angle"
+                    placeholder="Enter max polar angle"
+                    label="Max Polar Angle"
+                    isRequired={true}
+                    {...register("max_polar_angle")}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="min_polar_angle"
+                    placeholder="Enter min polar angle"
+                    label="Min Polar Angle"
+                    isRequired={true}
+                    {...register("min_polar_angle")}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="min_zoom"
+                    placeholder="Enter min zoom"
+                    label="Min Zoom"
+                    isRequired={true}
+                    {...register("min_zoom")}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="max_zoom"
+                    placeholder="Enter max zoom"
+                    label="Max Zoom"
+                    isRequired={true}
+                    {...register("max_zoom")}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="target"
+                    placeholder="Enter target x,y,z format"
+                    label="Target"
+                    isRequired={true}
+                    {...register("target")}
+                    errors={errors}
+                  />
+                </Grid>
+              </Grid>
+            </CustomPaper>
           </Box>
 
           <CardActions
