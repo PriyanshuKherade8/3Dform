@@ -626,7 +626,7 @@ const ExperienceForm = () => {
           </Box>
 
           {/* Orbit Control */}
-          <Box>
+          <Box mt={3}>
             <CustomPaper variant="outlined">
               <CustomTypographyForTitle>
                 <Typography variant="h6">Orbit Control</Typography>
