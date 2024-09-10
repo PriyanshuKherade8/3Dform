@@ -8,6 +8,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import ModelForm from "./Pages/ModelPage/ModelForm.js";
 import ModelList from "./Pages/ModelPage/ModelList.js";
 import MiniDrawer from "./Pages/Dashboard/MiniDrawer";
+import Experience from "./Pages/Experience/Experience.js";
+import ExperienceForm from "./Pages/Experience/ExperienceForm.js";
 
 const router = createBrowserRouter([
   {
@@ -28,7 +30,15 @@ const router = createBrowserRouter([
       },
       {
         path: "experience-list",
-        element: <>{"hiii"}</>,
+        element: <Experience />,
+      },
+      {
+        path: "/add-experience",
+        element: <ExperienceForm />,
+      },
+      {
+        path: "/edit-experience/:id",
+        element: <>{"update experience"}</>,
       },
     ],
   },
