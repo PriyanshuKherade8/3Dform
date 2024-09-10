@@ -70,17 +70,47 @@ const schema = yup.object().shape({
       })
     )
     .required("At least one control is required"),
-  cameras: yup.array().of(
-    yup.object().shape({
-      camera_id: yup.string().required("camera id is required"),
-      camera_type: yup.string().required("camera type is required"),
-      camera_fov: yup.string().required("camera fov is required"),
-      camera_near: yup.string().required("camera near is required"),
-      camera_far: yup.string().required("camera far is required"),
-      camera_position: yup.string().required("camera position is required"),
-      is_default: yup.string().required("camera default is required"),
-    })
-  ),
+  cameras: yup
+    .array()
+    .of(
+      yup.object().shape({
+        camera_id: yup.string().required("Camera ID is required"),
+        camera_type: yup.string().required("Camera type is required"),
+        camera_fov: yup.string().required("Camera FOV is required"),
+        camera_near: yup.string().required("Camera near is required"),
+        camera_far: yup.string().required("Camera far is required"),
+        camera_position: yup.string().required("Camera position is required"),
+        is_default: yup.string().required("Camera default is required"),
+      })
+    )
+    .required("At least one camera is required"),
+  products: yup
+    .array()
+    .of(
+      yup.object().shape({
+        is_active: yup.string().required("Product active status is required"),
+        product: yup.string().required("Product is required"),
+        is_product_active: yup
+          .string()
+          .required("Product active status is required"),
+        product_key: yup.string().required("Product key is required"),
+        custom_values: yup
+          .array()
+          .of(
+            yup.object().shape({
+              id: yup.string().required("ID is required"),
+              object: yup.string().required("Object is required"),
+              values: yup.object().shape({
+                x: yup.string().required("X value is required"),
+                y: yup.string().required("Y value is required"),
+                z: yup.string().required("Z value is required"),
+              }),
+            })
+          )
+          .required("At least one custom value is required"),
+      })
+    )
+    .required("At least one product is required"),
 });
 
 const ExperienceForm = () => {
@@ -120,6 +150,17 @@ const ExperienceForm = () => {
     },
   ];
 
+  const initialProducts = [
+    {
+      is_active: "",
+      product: "",
+      is_product_active: "",
+      // custom_values: [],
+      custom_values: [{ id: "", object: "", values: { x: "", y: "", z: "" } }],
+      product_key: "",
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -134,6 +175,7 @@ const ExperienceForm = () => {
       viewport: initialLinks,
       controls: initialControls,
       cameras: initialCameras,
+      products: initialProducts,
     },
   });
 
@@ -187,6 +229,16 @@ const ExperienceForm = () => {
     name: "cameras",
   });
 
+  //Field array for dynamic products
+  const {
+    fields: productsFields,
+    append: appendProducts,
+    remove: removeProducts,
+  } = useFieldArray({
+    control,
+    name: "products",
+  });
+
   // Add new row functions for both viewports and controls
   const addViewportRow = () => {
     appendViewport({
@@ -222,6 +274,16 @@ const ExperienceForm = () => {
     });
   };
 
+  const addProductRow = () => {
+    appendProducts({
+      is_active: "",
+      product: "",
+      is_product_active: "",
+      custom_values: [{ id: "", object: "", values: { x: "", y: "", z: "" } }], // Initialize with at least one custom value
+      product_key: "",
+    });
+  };
+
   // Form submit handler
   const onSubmit = (data) => {
     console.log("payload", data);
@@ -247,7 +309,7 @@ const ExperienceForm = () => {
       <CustomPaper variant="outlined">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={3}>
               <Dropdown
                 id="mode"
                 placeholder="Select Mode"
@@ -261,7 +323,7 @@ const ExperienceForm = () => {
                 errors={errors}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={3}>
               <Dropdown
                 id="environment"
                 placeholder="Select Environment"
@@ -758,6 +820,112 @@ const ExperienceForm = () => {
             </CustomPaper>
           </Box>
 
+          {/* Products Control */}
+          <Box mt={3}>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Products</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <CustomPaper variant="outlined">
+              <Box style={{ padding: "8px", width: "100%" }}>
+                {productsFields.map((field, index) => (
+                  <Grid container spacing={1} key={field.id}>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`products.${index}.is_active`}
+                        label="Is Active"
+                        defaultValue={field.is_active}
+                        isRequired={true}
+                        {...register(`products.${index}.is_active`)}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`products.${index}.product`}
+                        label="Product"
+                        defaultValue={field.product}
+                        isRequired={true}
+                        {...register(`products.${index}.product`)}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`products.${index}.is_product_active`}
+                        label="Is Product Active"
+                        defaultValue={field.is_product_active}
+                        isRequired={true}
+                        {...register(`products.${index}.is_product_active`)}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`products.${index}.product_key`}
+                        label="Product Key"
+                        defaultValue={field.product_key}
+                        isRequired={true}
+                        {...register(`products.${index}.product_key`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Box mt={2}>
+                      {/* <Typography variant="subtitle1">Custom Values</Typography> */}
+                      <CustomValuesForm
+                        control={control}
+                        productIndex={index}
+                        register={register}
+                        errors={errors}
+                      />
+                    </Box>
+
+                    {/* Add/Remove Buttons aligned to the right */}
+                    <Grid item xs={12}>
+                      <Grid container justifyContent="flex-end" spacing={2}>
+                        {/* Remove Button - Only show if there's more than one row */}
+                        {productsFields.length !== 1 && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              size="small"
+                              onClick={() => removeProducts(index)}
+                              style={{
+                                backgroundColor: DeleteColor,
+                                color: TextColor,
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </Grid>
+                        )}
+
+                        {/* Add Button only on the last row */}
+                        {productsFields.length - 1 === index && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="contained"
+                              onClick={addProductRow}
+                              size="small"
+                              style={{ backgroundColor: PrimaryColor }}
+                            >
+                              Add
+                            </Button>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                ))}
+              </Box>
+            </CustomPaper>
+          </Box>
+          {/* end */}
+
           <CardActions
             style={{ justifyContent: "flex-end", marginTop: "16px" }}
           >
@@ -772,6 +940,236 @@ const ExperienceForm = () => {
         </form>
       </CustomPaper>
     </CustomLayout>
+  );
+};
+
+const CustomValuesForm = ({ control, productIndex, register, errors }) => {
+  // Field array for dynamic custom_values
+  const {
+    fields: customValuesFields,
+    append: appendCustomValue,
+    remove: removeCustomValue,
+  } = useFieldArray({
+    control,
+    name: `products.${productIndex}.custom_values`,
+  });
+
+  // Function to add a new custom value row
+  const addCustomValueRow = () => {
+    appendCustomValue({
+      id: "",
+      object: "",
+      values: { x: "", y: "", z: "" },
+    });
+  };
+  console.log("customValuesFields11", customValuesFields, productIndex);
+  return (
+    // <Box mt={2}>
+    //   {customValuesFields.map((customValueField, customValueIndex) => (
+    //     <Grid container spacing={2} key={customValueField.id}>
+    //       <Grid item xs={12} md={3}>
+    //         <TextField
+    //           label="ID"
+    //           defaultValue={customValueField.id}
+    //           {...register(
+    //             `products.${productIndex}.custom_values.${customValueIndex}.id`
+    //           )}
+    //           errors={errors}
+    //           fullWidth
+    //         />
+    //       </Grid>
+    //       <Grid item xs={12} md={3}>
+    //         <TextField
+    //           label="Object"
+    //           defaultValue={customValueField.object}
+    //           {...register(
+    //             `products.${productIndex}.custom_values.${customValueIndex}.object`
+    //           )}
+    //           errors={errors}
+    //           fullWidth
+    //         />
+    //       </Grid>
+    //       <Grid item xs={12} md={2}>
+    //         <TextField
+    //           label="X"
+    //           defaultValue={customValueField.values.x}
+    //           {...register(
+    //             `products.${productIndex}.custom_values.${customValueIndex}.values.x`
+    //           )}
+    //           errors={errors}
+    //           fullWidth
+    //         />
+    //       </Grid>
+    //       <Grid item xs={12} md={2}>
+    //         <TextField
+    //           label="Y"
+    //           defaultValue={customValueField.values.y}
+    //           {...register(
+    //             `products.${productIndex}.custom_values.${customValueIndex}.values.y`
+    //           )}
+    //           errors={errors}
+    //           fullWidth
+    //         />
+    //       </Grid>
+    //       <Grid item xs={12} md={2}>
+    //         <TextField
+    //           label="Z"
+    //           defaultValue={customValueField.values.z}
+    //           {...register(
+    //             `products.${productIndex}.custom_values.${customValueIndex}.values.z`
+    //           )}
+    //           errors={errors}
+    //           fullWidth
+    //         />
+    //       </Grid>
+
+    //       {/* Add/Remove buttons for custom values */}
+    //       <Grid item xs={12}>
+    //         <Grid container justifyContent="flex-end" spacing={2}>
+    //           {/* Remove Custom Value Button */}
+    //           {customValuesFields.length > 1 && (
+    //             <Grid item>
+    //               <Button
+    //                 variant="outlined"
+    //                 color="secondary"
+    //                 onClick={() => removeCustomValue(customValueIndex)}
+    //               >
+    //                 Remove Custom Value
+    //               </Button>
+    //             </Grid>
+    //           )}
+
+    //           {/* Add Custom Value Button */}
+    //           {customValueIndex === customValuesFields.length - 1 && (
+    //             <Grid item>
+    //               <Button variant="contained" onClick={addCustomValueRow}>
+    //                 Add Custom Value
+    //               </Button>
+    //             </Grid>
+    //           )}
+    //         </Grid>
+    //       </Grid>
+    //     </Grid>
+    //   ))}
+    // </Box>
+    <Box mt={3}>
+      <CustomPaper variant="outlined">
+        <CustomTypographyForTitle>
+          <Typography
+            variant="subtitle2"
+            style={{ fontWeight: "550", fontSize: "16px" }}
+          >
+            Custom Values
+          </Typography>
+        </CustomTypographyForTitle>
+      </CustomPaper>
+      <TableContainer component={Paper} variant="outlined">
+        <Table>
+          <TableBody>
+            {/* Table Header */}
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Object</TableCell>
+              <TableCell>X</TableCell>
+              <TableCell>Y</TableCell>
+              <TableCell>Z</TableCell>
+              <TableCell>{/* Action Buttons */}</TableCell>
+            </TableRow>
+
+            {customValuesFields.map((customValueField, customValueIndex) => (
+              <TableRow key={customValueField.id}>
+                <TableCell>
+                  <TextField
+                    // label="ID"
+                    defaultValue={customValueField.id}
+                    {...register(
+                      `products.${productIndex}.custom_values.${customValueIndex}.id`
+                    )}
+                    errors={errors}
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    // label="Object"
+                    defaultValue={customValueField.object}
+                    {...register(
+                      `products.${productIndex}.custom_values.${customValueIndex}.object`
+                    )}
+                    errors={errors}
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    // label="X"
+                    defaultValue={customValueField.values.x}
+                    {...register(
+                      `products.${productIndex}.custom_values.${customValueIndex}.values.x`
+                    )}
+                    errors={errors}
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    // label="Y"
+                    defaultValue={customValueField.values.y}
+                    {...register(
+                      `products.${productIndex}.custom_values.${customValueIndex}.values.y`
+                    )}
+                    errors={errors}
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    // label="Z"
+                    defaultValue={customValueField.values.z}
+                    {...register(
+                      `products.${productIndex}.custom_values.${customValueIndex}.values.z`
+                    )}
+                    errors={errors}
+                  />
+                </TableCell>
+
+                {/* Add/Remove buttons for custom values */}
+                <TableCell>
+                  <Grid container justifyContent="flex-end" spacing={2}>
+                    {customValuesFields.length > 1 && (
+                      <Grid item>
+                        <Button
+                          variant="outlined"
+                          style={{
+                            backgroundColor: DeleteColor,
+                            color: TextColor,
+                          }}
+                          size="small"
+                          onClick={() => removeCustomValue(customValueIndex)}
+                        >
+                          Remove
+                        </Button>
+                      </Grid>
+                    )}
+                    {customValueIndex === customValuesFields.length - 1 && (
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={addCustomValueRow}
+                          style={{
+                            backgroundColor: PrimaryColor,
+                            color: TextColor,
+                          }}
+                        >
+                          Add
+                        </Button>
+                      </Grid>
+                    )}
+                  </Grid>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 
