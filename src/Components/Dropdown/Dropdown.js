@@ -12,7 +12,6 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 export const CustomLabel = styled.label`
   color: ${({ theme }) =>
     theme.primaryColor ? `${theme.primaryColor} !important` : "rgb(0, 0, 0)"};
-
   font-size: 15px;
   font-family: system-ui;
   white-space: nowrap;
@@ -20,6 +19,26 @@ export const CustomLabel = styled.label`
   text-overflow: ellipsis;
   width: 100%;
   display: inline-block;
+`;
+
+const InputContainer = styled.div`
+  position: relative;
+  width: ${({ Width }) => (Width ? `${Width}px` : "100%")};
+  min-height: ${({ minHeight }) => (minHeight ? `${minHeight}px` : "auto")};
+  margin-bottom: ${({ marginBottom }) =>
+    marginBottom ? "24px" : "0"}; /* Space for error message */
+`;
+
+const ErrorWrapper = styled.div`
+  position: absolute;
+  bottom: -25px; /* Adjust this value based on the font size of your error message */
+  left: 0;
+  width: 100%;
+  color: red;
+  font-size: 12px;
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Show ellipsis when text overflows */
+  white-space: nowrap; /* Prevent text from wrapping to the next line */
 `;
 
 function Dropdown({
@@ -303,13 +322,10 @@ function Dropdown({
   MenuRef.displayName = "MenuRef";
 
   return (
-    <div
-      style={{
-        width: Width ?? "100%",
-        position: "relative",
-        minHeight: minHeight ? minHeight : "",
-      }}
-      className={marginBottom ? "mb-3" : ""}
+    <InputContainer
+      Width={Width}
+      minHeight={minHeight}
+      marginBottom={marginBottom}
       id={fieldId ? fieldId : ""}
     >
       <CustomLabel htmlFor={id}>
@@ -367,15 +383,20 @@ function Dropdown({
               ...components,
             }}
             error={errors?.[id]}
-            // styles={proposalRead ? readOnlyCustomStyles : customStyles}
             styles={customStyles}
             menuPortalTarget={menuPortalTarget}
             noOptionsMessage={() => noOptionMessage}
           />
         )}
       />
-      {errors?.[id] ? <ErrorMessage message={errors?.[id]?.message} /> : null}
-    </div>
+      {errors?.[id] && (
+        <Tooltip title={errors[id]?.message || ""} arrow placement="bottom">
+          <ErrorWrapper>
+            <ErrorMessage message={errors[id]?.message} />
+          </ErrorWrapper>
+        </Tooltip>
+      )}
+    </InputContainer>
   );
 }
 

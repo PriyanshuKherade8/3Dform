@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import { Tooltip } from "@mui/material";
 
 const Textarea = React.forwardRef(
   (
@@ -24,54 +25,55 @@ const Textarea = React.forwardRef(
     },
     ref
   ) => {
+    const hasError = Boolean(errors?.[name]);
+    const errorMessage = errors?.[name]?.message;
+
     return (
-      <>
-        <TextareaContainer>
-          {label && (
-            <CustomLabel htmlFor={id}>
-              {label}
-              {isRequired && !proposalRead && (
-                <span className="required"> *</span>
-              )}
-            </CustomLabel>
-          )}
-          {proposalRead ? (
-            <></>
-          ) : (
-            <>
-              <StyledTextarea
-                id={id}
-                name={name}
-                value={value}
-                onChange={onChange}
-                onBlur={onBlur}
-                onFocus={onFocus}
-                isRequired={isRequired}
-                disabled={disabled}
-                placeholder={placeholder}
-                readOnly={readOnly}
-                ref={ref}
-                error={errors?.[name]}
-                {...rest}
-              />
-            </>
-          )}
-          {errors?.[name] ? (
-            <ErrorMessage message={errors?.[name]?.message} />
-          ) : null}
-        </TextareaContainer>
-      </>
+      <TextareaContainer>
+        {label && (
+          <CustomLabel htmlFor={id}>
+            {label}
+            {isRequired && !proposalRead && (
+              <span className="required"> *</span>
+            )}
+          </CustomLabel>
+        )}
+        {proposalRead ? null : (
+          <StyledTextarea
+            id={id}
+            name={name}
+            value={value}
+            onChange={onChange}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            isRequired={isRequired}
+            disabled={disabled}
+            placeholder={placeholder}
+            readOnly={readOnly}
+            ref={ref}
+            error={hasError}
+            {...rest}
+          />
+        )}
+        {hasError && (
+          <ErrorWrapper>
+            <Tooltip title={errorMessage} placement="top" arrow>
+              <span>{errorMessage}</span>
+            </Tooltip>
+          </ErrorWrapper>
+        )}
+      </TextareaContainer>
     );
   }
 );
 
-// Add display name for better debugging
 Textarea.displayName = "Textarea";
 
 export default Textarea;
 
 const TextareaContainer = styled.div`
-  margin-bottom: 16px;
+  position: relative;
+  margin-bottom: 40px; /* Ensure space for error message */
 `;
 
 const StyledTextarea = styled.textarea`
@@ -93,6 +95,7 @@ const StyledTextarea = styled.textarea`
     background-color: #f7f7f7;
   }
 `;
+
 export const CustomLabel = styled.label`
   color: ${({ theme }) =>
     theme.primaryColor ? `${theme.primaryColor} !important` : "rgb(0,0,0)"};
@@ -104,4 +107,16 @@ export const CustomLabel = styled.label`
   text-overflow: ellipsis;
   width: 100%;
   display: inline-block;
+`;
+
+const ErrorWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: red;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;

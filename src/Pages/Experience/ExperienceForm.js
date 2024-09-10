@@ -57,7 +57,19 @@ const schema = yup.object().shape({
           .required("Camera look-at delta is required"),
       })
     )
-    .required("At least one link is required"),
+    .required("At least one viewport is required"),
+  controls: yup
+    .array()
+    .of(
+      yup.object().shape({
+        control_id: yup.string().required("Control ID is required"),
+        is_control_active: yup
+          .string()
+          .required("Control Active status is required"),
+        default_value: yup.string().required("Default value is required"),
+      })
+    )
+    .required("At least one control is required"),
 });
 
 const ExperienceForm = () => {
@@ -77,6 +89,14 @@ const ExperienceForm = () => {
     },
   ];
 
+  const initialControls = [
+    {
+      control_id: "",
+      is_control_active: "",
+      default_value: "",
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -89,6 +109,7 @@ const ExperienceForm = () => {
       mode: "",
       environment: "",
       viewport: initialLinks,
+      controls: initialControls,
     },
   });
 
@@ -107,15 +128,29 @@ const ExperienceForm = () => {
     }
   );
 
-  // Field array for dynamic link fields
-  const { fields, append, remove, replace } = useFieldArray({
+  // Field array for dynamic viewport fields
+  const {
+    fields: viewportFields,
+    append: appendViewport,
+    remove: removeViewport,
+  } = useFieldArray({
     control,
     name: "viewport",
   });
 
-  // Add new row function
-  const addRow = () => {
-    append({
+  // Field array for dynamic control fields
+  const {
+    fields: controlFields,
+    append: appendControl,
+    remove: removeControl,
+  } = useFieldArray({
+    control,
+    name: "controls",
+  });
+
+  // Add new row functions for both viewports and controls
+  const addViewportRow = () => {
+    appendViewport({
       viewport_name: "",
       transition_lower_limit: "",
       transition_upper_limit: "",
@@ -128,9 +163,17 @@ const ExperienceForm = () => {
     });
   };
 
+  const addControlRow = () => {
+    appendControl({
+      control_id: "",
+      is_control_active: "",
+      default_value: "",
+    });
+  };
+
   // Form submit handler
   const onSubmit = (data) => {
-    console.log("pyloadmm", data);
+    console.log("payload", data);
 
     const addPayload = {
       ...data,
@@ -179,7 +222,7 @@ const ExperienceForm = () => {
             </Grid>
           </Grid>
 
-          {/* Links Section */}
+          {/* Viewport Section */}
           <Box mt={3}>
             <CustomPaper variant="outlined">
               <CustomTypographyForTitle>
@@ -203,7 +246,7 @@ const ExperienceForm = () => {
                     <TableCell>{/* Action Buttons */}</TableCell>
                   </TableRow>
 
-                  {fields.map((field, index) => (
+                  {viewportFields.map((field, index) => (
                     <TableRow key={field.id}>
                       <TableCell>
                         <TextField
@@ -289,13 +332,13 @@ const ExperienceForm = () => {
                       </TableCell>
                       <TableCell>
                         <Grid container justifyContent="flex-end" spacing={1}>
-                          {fields.length > 1 && (
+                          {viewportFields.length > 1 && (
                             <Grid item>
                               <Button
                                 type="button"
                                 variant="outlined"
                                 size="small"
-                                onClick={() => remove(index)}
+                                onClick={() => removeViewport(index)}
                                 style={{
                                   backgroundColor: DeleteColor,
                                   color: TextColor,
@@ -305,12 +348,96 @@ const ExperienceForm = () => {
                               </Button>
                             </Grid>
                           )}
-                          {fields.length - 1 === index && (
+                          {viewportFields.length - 1 === index && (
                             <Grid item>
                               <Button
                                 type="button"
                                 variant="contained"
-                                onClick={addRow}
+                                onClick={addViewportRow}
+                                style={{ backgroundColor: PrimaryColor }}
+                                size="small"
+                              >
+                                Add
+                              </Button>
+                            </Grid>
+                          )}
+                        </Grid>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          {/* Controls Section */}
+          <Box mt={3}>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Controls</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <TableContainer component={Paper} variant="outlined">
+              <Table>
+                <TableBody>
+                  {/* Table Header */}
+                  <TableRow>
+                    <TableCell>Control ID</TableCell>
+                    <TableCell>Is Control Active</TableCell>
+                    <TableCell>Default Value</TableCell>
+                    <TableCell>{/* Action Buttons */}</TableCell>
+                  </TableRow>
+
+                  {controlFields.map((field, index) => (
+                    <TableRow key={field.id}>
+                      <TableCell>
+                        <TextField
+                          id={`controls.${index}.control_id`}
+                          {...register(`controls.${index}.control_id`)}
+                          defaultValue={field.control_id}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          id={`controls.${index}.is_control_active`}
+                          {...register(`controls.${index}.is_control_active`)}
+                          defaultValue={field.is_control_active}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          id={`controls.${index}.default_value`}
+                          {...register(`controls.${index}.default_value`)}
+                          defaultValue={field.default_value}
+                          errors={errors}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Grid container justifyContent="flex-end" spacing={1}>
+                          {controlFields.length > 1 && (
+                            <Grid item>
+                              <Button
+                                type="button"
+                                variant="outlined"
+                                size="small"
+                                onClick={() => removeControl(index)}
+                                style={{
+                                  backgroundColor: DeleteColor,
+                                  color: TextColor,
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            </Grid>
+                          )}
+                          {controlFields.length - 1 === index && (
+                            <Grid item>
+                              <Button
+                                type="button"
+                                variant="contained"
+                                onClick={addControlRow}
                                 style={{ backgroundColor: PrimaryColor }}
                                 size="small"
                               >
