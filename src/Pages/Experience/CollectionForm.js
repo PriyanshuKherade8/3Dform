@@ -123,6 +123,90 @@ export const CollectionValuesForm = ({
     );
   };
 
+  const PropertyFields = ({
+    control,
+    register,
+    errors,
+    actionFields,
+    shotIndex,
+  }) => {
+    const {
+      fields: propertyFieldsList,
+      append: appendPropertyAction,
+      remove: removePropertyAction,
+    } = useFieldArray({
+      control,
+      name: `collections.${productIndex}.items.${shotIndex}.property`,
+    });
+
+    const addPropertyRow = () => {
+      appendPropertyAction({
+        property_id: "",
+      });
+    };
+
+    return (
+      <>
+        {propertyFieldsList.map((actionField, actionIndex) => (
+          <Grid container spacing={2} key={actionField.id}>
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="Property Id"
+                defaultValue={actionField.property_id}
+                {...register(
+                  `collections.${productIndex}.items.${shotIndex}.property.${actionIndex}.property_id`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+
+            <Grid item xs={12} md={12}>
+              <Grid
+                container
+                spacing={2}
+                style={{
+                  display: "flex",
+                  alignItems: "end",
+                  justifyContent: "flex-end",
+                }}
+              >
+                {propertyFieldsList.length !== 1 && (
+                  <Grid item>
+                    <Button
+                      size="small"
+                      style={{
+                        backgroundColor: DeleteColor,
+                        color: TextColor,
+                      }}
+                      onClick={() => removePropertyAction(actionIndex)}
+                    >
+                      Remove Property
+                    </Button>
+                  </Grid>
+                )}
+                {propertyFieldsList.length - 1 === actionIndex && (
+                  <Grid item>
+                    <Button
+                      size="small"
+                      onClick={addPropertyRow}
+                      style={{
+                        backgroundColor: PrimaryColor,
+                        color: TextColor,
+                      }}
+                    >
+                      Add Property
+                    </Button>
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
+          </Grid>
+        ))}
+      </>
+    );
+  };
+
   return (
     <Box mt={2}>
       {customValuesFields.map((customValueField, customValueIndex) => (
@@ -206,13 +290,13 @@ export const CollectionValuesForm = ({
                 <Typography variant="h6">property</Typography>
               </CustomTypographyForTitle>
             </CustomPaper>
-            {/* <ActionFields
+            <PropertyFields
               control={control}
               register={register}
               errors={errors}
               actionFields={customValueField.action}
               shotIndex={customValueIndex}
-            /> */}
+            />
           </CustomPaper>
         </div>
       ))}
