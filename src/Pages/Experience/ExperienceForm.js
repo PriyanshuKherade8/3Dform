@@ -26,7 +26,10 @@ import { useForm, useFieldArray } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams } from "react-router-dom";
-import { useGetEnviromentListData } from "./ExperienceServices";
+import {
+  useAddExperience,
+  useGetEnviromentListData,
+} from "./ExperienceServices";
 import { SequenceValuesForm } from "./SequenceForm";
 import { CollectionValuesForm } from "./CollectionForm";
 
@@ -248,6 +251,8 @@ const ExperienceForm = () => {
     environmentListData?.data?.environmentList
   );
 
+  const { mutate: addExperience } = useAddExperience();
+
   const environmentList = environmentListData?.data?.environmentList?.map(
     (item) => {
       return {
@@ -428,13 +433,55 @@ const ExperienceForm = () => {
   // Form submit handler
   const onSubmit = (data) => {
     console.log("payload", data);
-
+    const {
+      enabled,
+      auto_rotate,
+      enable_pan,
+      enable_rotate,
+      enable_zoom,
+      max_azimuth_angle,
+      min_azimuth_angle,
+      max_polar_angle,
+      min_polar_angle,
+      min_zoom,
+      max_zoom,
+      target,
+      mode,
+      ...restOfData
+    } = data;
     const addPayload = {
-      ...data,
-      environment: data?.environment?.value,
-      mode: data?.mode?.value,
+      experience: {
+        ...restOfData,
+        experience_id: "5145241", //remove
+        environment: data?.environment?.value,
+        // mode: data?.mode?.value,
+
+        is_story_mode: false,
+        is_showcase_mode: false,
+        is_collection_mode: true,
+
+        orbit_control: {
+          enabled: data?.enabled?.value,
+          auto_rotate: data?.auto_rotate?.value,
+          enable_pan: data?.enable_pan?.value,
+          enable_rotate: data?.enable_rotate?.value,
+          enable_zoom: data?.enable_zoom?.value,
+          max_azimuth_angle: data?.max_azimuth_angle,
+          min_azimuth_angle: data?.min_azimuth_angle,
+          max_polar_angle: data?.max_polar_angle,
+          min_polar_angle: data?.min_polar_angle,
+          min_zoom: data?.min_zoom,
+          max_zoom: data?.max_zoom,
+          target: {
+            x: "0",
+            y: "0.28",
+            z: "0",
+          },
+        },
+      },
     };
     console.log("addPayload", addPayload);
+    addExperience(addPayload);
   };
 
   return (
