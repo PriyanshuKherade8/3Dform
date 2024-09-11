@@ -161,6 +161,36 @@ const ExperienceForm = () => {
     },
   ];
 
+  const initialSequence = [
+    {
+      sequence_id: "",
+      shots: [
+        {
+          shot_id: "",
+          is_first_shot: "",
+          previous_shot: "",
+          shot_controls: {
+            duration: "",
+            repeat: "",
+            repeat_forever: "",
+            back_to_start: "",
+            easing_function: "",
+            easing_type: "",
+          },
+          action: [
+            {
+              action_id: "",
+              action_object_type: "",
+              action_type: "",
+              action_property: "",
+              action_values: { x: "", y: "", z: "" },
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -168,7 +198,7 @@ const ExperienceForm = () => {
     setValue,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    // resolver: yupResolver(schema),
     defaultValues: {
       mode: "",
       environment: "",
@@ -176,6 +206,7 @@ const ExperienceForm = () => {
       controls: initialControls,
       cameras: initialCameras,
       products: initialProducts,
+      sequences: initialSequence,
     },
   });
 
@@ -239,6 +270,16 @@ const ExperienceForm = () => {
     name: "products",
   });
 
+  //Field array for sequence
+  const {
+    fields: sequenceFields,
+    append: appendSequence,
+    remove: removeSequence,
+  } = useFieldArray({
+    control,
+    name: "sequences",
+  });
+
   // Add new row functions for both viewports and controls
   const addViewportRow = () => {
     appendViewport({
@@ -281,6 +322,36 @@ const ExperienceForm = () => {
       is_product_active: "",
       custom_values: [{ id: "", object: "", values: { x: "", y: "", z: "" } }], // Initialize with at least one custom value
       product_key: "",
+    });
+  };
+
+  const addSequenceRow = () => {
+    appendSequence({
+      sequence_id: "",
+      shots: [
+        {
+          shot_id: "",
+          is_first_shot: "",
+          previous_shot: "",
+          shot_controls: {
+            duration: "",
+            repeat: "",
+            repeat_forever: "",
+            back_to_start: "",
+            easing_function: "",
+            easing_type: "",
+          },
+          action: [
+            {
+              action_id: "",
+              action_object_type: "",
+              action_type: "",
+              action_property: "",
+              action_values: { x: "", y: "", z: "" },
+            },
+          ],
+        },
+      ],
     });
   };
 
@@ -926,6 +997,86 @@ const ExperienceForm = () => {
           </Box>
           {/* end */}
 
+          {/* sequences control */}
+          <Box mt={3}>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Sequence</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <CustomPaper variant="outlined">
+              <Box style={{ padding: "8px", width: "100%" }}>
+                {sequenceFields.map((field, index) => (
+                  <Grid container spacing={1} key={field.id}>
+                    <Grid item xs={12} md={12}>
+                      <TextField
+                        id={`sequences.${index}.sequence_id`}
+                        label="Sequence Id"
+                        defaultValue={field.sequence_id}
+                        isRequired={true}
+                        {...register(`sequences.${index}.sequence_id`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Box
+                      style={{
+                        boxSizing: "border-box",
+                        width: "100%",
+                      }}
+                    >
+                      <SequenceValuesForm
+                        control={control}
+                        productIndex={index}
+                        register={register}
+                        errors={errors}
+                      />
+                    </Box>
+
+                    {/* Add/Remove Buttons aligned to the right */}
+                    <Grid item xs={12}>
+                      <Grid container justifyContent="flex-end" spacing={2}>
+                        {/* Remove Button - Only show if there's more than one row */}
+                        {sequenceFields.length !== 1 && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              size="small"
+                              onClick={() => removeSequence(index)}
+                              style={{
+                                backgroundColor: DeleteColor,
+                                color: TextColor,
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </Grid>
+                        )}
+
+                        {/* Add Button only on the last row */}
+                        {sequenceFields.length - 1 === index && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="contained"
+                              onClick={addSequenceRow}
+                              size="small"
+                              style={{ backgroundColor: PrimaryColor }}
+                            >
+                              Add
+                            </Button>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                ))}
+              </Box>
+            </CustomPaper>
+          </Box>
+          {/* end */}
+
           <CardActions
             style={{ justifyContent: "flex-end", marginTop: "16px" }}
           >
@@ -1173,4 +1324,172 @@ const CustomValuesForm = ({ control, productIndex, register, errors }) => {
   );
 };
 
+const SequenceValuesForm = ({ control, productIndex, register, errors }) => {
+  // Field array for dynamic custom_values
+  const {
+    fields: customValuesFields,
+    append: appendCustomValue,
+    remove: removeCustomValue,
+  } = useFieldArray({
+    control,
+    name: `sequences.${productIndex}.shots`,
+  });
+
+  // Function to add a new custom value row
+  const addCustomValueRow = () => {
+    appendCustomValue({
+      shots: [
+        {
+          shot_id: "",
+          is_first_shot: "",
+          previous_shot: "",
+          shot_controls: {
+            duration: "",
+            repeat: "",
+            repeat_forever: "",
+            back_to_start: "",
+            easing_function: "",
+            easing_type: "",
+          },
+          action: [
+            {
+              action_id: "",
+              action_object_type: "",
+              action_type: "",
+              action_property: "",
+              action_values: { x: "", y: "", z: "" },
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  console.log("customValuesFields11", customValuesFields, productIndex);
+  return (
+    <Box mt={2}>
+      {customValuesFields.map((customValueField, customValueIndex) => (
+        <>
+          <Grid container spacing={2} key={customValueField.id}>
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="Shot Id"
+                defaultValue={customValueField.shot_id}
+                {...register(
+                  `sequences.${productIndex}.shots.${customValueIndex}.shot_id`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="Is First Shot"
+                defaultValue={customValueField.is_first_shot}
+                {...register(
+                  `sequences.${productIndex}.shots.${customValueIndex}.is_first_shot`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <TextField
+                label="Previous Shot"
+                defaultValue={customValueField.previous_shot}
+                {...register(
+                  `sequences.${productIndex}.shots.${customValueIndex}.previous_shot`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+          </Grid>
+          <CustomPaper
+            style={{ boxSizing: "border-box", border: "1px solid green" }}
+          >
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Shot Controls</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  label="Duration"
+                  defaultValue={customValueField.shot_controls?.duration}
+                  {...register(
+                    `sequences.${productIndex}.shots.${customValueIndex}.shot_controls.duration`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  label="Repeat Forever"
+                  defaultValue={customValueField.shot_controls?.repeat_forever}
+                  {...register(
+                    `sequences.${productIndex}.shots.${customValueIndex}.shot_controls.repeat_forever`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  label="Repeat"
+                  defaultValue={customValueField.shot_controls?.repeat}
+                  {...register(
+                    `sequences.${productIndex}.shots.${customValueIndex}.shot_controls.repeat`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  label="Back To Start"
+                  defaultValue={customValueField.shot_controls?.back_to_start}
+                  {...register(
+                    `sequences.${productIndex}.shots.${customValueIndex}.shot_controls.back_to_start`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  label="Easing Function"
+                  defaultValue={customValueField.shot_controls?.easing_function}
+                  {...register(
+                    `sequences.${productIndex}.shots.${customValueIndex}.shot_controls.easing_function`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  label="Easing Type"
+                  defaultValue={customValueField.shot_controls?.easing_type}
+                  {...register(
+                    `sequences.${productIndex}.shots.${customValueIndex}.shot_controls.easing_type`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </CustomPaper>
+        </>
+      ))}
+    </Box>
+  );
+};
 export default ExperienceForm;
