@@ -501,13 +501,13 @@ const ExperienceForm = () => {
           ...controls.map((control) => ({
             control_id: control.control_id?.value,
             default_value:
-              control.default_value === "true"
+              control.default_value?.value === "true"
                 ? true
                 : control.default_value === "false"
                 ? false
                 : control.default_value,
             is_control_active:
-              control.is_control_active === "true"
+              control.is_control_active?.value === "true"
                 ? true
                 : control.is_control_active === "false"
                 ? false
@@ -517,13 +517,13 @@ const ExperienceForm = () => {
         products: products.map((item) => ({
           product: item.product?.value,
           is_active:
-            item.is_active === "true"
+            item.is_active?.value === "true"
               ? true
               : item.is_active === "false"
               ? false
               : item.is_active,
           is_product_active:
-            item.is_product_active === "true"
+            item.is_product_active?.value === "true"
               ? true
               : item.is_product_active === "false"
               ? false
@@ -841,18 +841,24 @@ const ExperienceForm = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <TextField
+                        <Dropdown
                           id={`controls.${index}.is_control_active`}
+                          placeholder="Select"
+                          control={control}
                           {...register(`controls.${index}.is_control_active`)}
                           defaultValue={field.is_control_active}
+                          selectObj={booleanList}
                           errors={errors}
                         />
                       </TableCell>
                       <TableCell>
-                        <TextField
+                        <Dropdown
                           id={`controls.${index}.default_value`}
+                          placeholder="Select"
+                          control={control}
                           {...register(`controls.${index}.default_value`)}
                           defaultValue={field.default_value}
+                          selectObj={booleanList}
                           errors={errors}
                         />
                       </TableCell>
@@ -1181,12 +1187,14 @@ const ExperienceForm = () => {
                 {productsFields.map((field, index) => (
                   <Grid container spacing={1} key={field.id}>
                     <Grid item xs={12} md={3}>
-                      <TextField
+                      <Dropdown
                         id={`products.${index}.is_active`}
-                        label="Is Active"
-                        defaultValue={field.is_active}
-                        isRequired={true}
+                        label={"Is Active"}
+                        placeholder="Select"
+                        control={control}
                         {...register(`products.${index}.is_active`)}
+                        defaultValue={field.is_active}
+                        selectObj={booleanList}
                         errors={errors}
                       />
                     </Grid>
@@ -1203,12 +1211,14 @@ const ExperienceForm = () => {
                       />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                      <TextField
+                      <Dropdown
                         id={`products.${index}.is_product_active`}
-                        label="Is Product Active"
-                        defaultValue={field.is_product_active}
-                        isRequired={true}
+                        label={"Is Product Active"}
+                        placeholder="Select"
+                        control={control}
                         {...register(`products.${index}.is_product_active`)}
+                        defaultValue={field.is_product_active}
+                        selectObj={booleanList}
                         errors={errors}
                       />
                     </Grid>
