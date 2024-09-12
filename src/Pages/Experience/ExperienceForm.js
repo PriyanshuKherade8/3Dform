@@ -476,6 +476,11 @@ const ExperienceForm = () => {
       targetx,
       targety,
       targetz,
+      viewport,
+      cameras,
+      cameraX,
+      cameraY,
+      cameraZ,
       ...restOfData
     } = data;
 
@@ -496,20 +501,48 @@ const ExperienceForm = () => {
         environment: data?.environment?.value,
 
         ...setModeFlags(data),
-        // controls: [...controls],
+        viewport: viewport.map((item) => ({
+          ...item,
+          is_canvas_fullscreen:
+            item?.is_canvas_fullscreen === "true"
+              ? true
+              : item?.is_canvas_fullscreen === "false"
+              ? false
+              : item?.is_canvas_fullscreen,
+        })),
+
+        cameras: cameras.map((item) => {
+          const { cameraX, cameraY, cameraZ, ...restOfItem } = item;
+
+          return {
+            ...restOfItem,
+            is_default:
+              item?.is_default === "true"
+                ? true
+                : item?.is_default === "false"
+                ? false
+                : item?.is_default,
+            camera_position: {
+              x: item?.cameraX,
+              y: item?.cameraY,
+              z: item?.cameraZ,
+            },
+          };
+        }),
+
         controls: [
           ...controls.map((control) => ({
             control_id: control.control_id?.value,
             default_value:
               control.default_value?.value === "true"
                 ? true
-                : control.default_value === "false"
+                : control.default_value?.value === "false"
                 ? false
                 : control.default_value,
             is_control_active:
               control.is_control_active?.value === "true"
                 ? true
-                : control.is_control_active === "false"
+                : control.is_control_active?.value === "false"
                 ? false
                 : control.is_control_active,
           })),
@@ -519,13 +552,13 @@ const ExperienceForm = () => {
           is_active:
             item.is_active?.value === "true"
               ? true
-              : item.is_active === "false"
+              : item.is_active?.value === "false"
               ? false
               : item.is_active,
           is_product_active:
             item.is_product_active?.value === "true"
               ? true
-              : item.is_product_active === "false"
+              : item.is_product_active?.value === "false"
               ? false
               : item.is_product_active,
 
@@ -919,7 +952,9 @@ const ExperienceForm = () => {
                     <TableCell>Camera Fov</TableCell>
                     <TableCell>Camera Near</TableCell>
                     <TableCell>Camera Far</TableCell>
-                    <TableCell>Camera Position</TableCell>
+                    <TableCell>Camera X</TableCell>
+                    <TableCell>Camera Y</TableCell>
+                    <TableCell>Camera Z</TableCell>
                     <TableCell>Camera is default</TableCell>
                     <TableCell>{/* Action Buttons */}</TableCell>
                   </TableRow>
@@ -968,12 +1003,31 @@ const ExperienceForm = () => {
                       </TableCell>
                       <TableCell>
                         <TextField
-                          id={`cameras.${index}.camera_position`}
-                          {...register(`cameras.${index}.camera_position`)}
-                          defaultValue={field.camera_position}
+                          id={`cameras.${index}.cameraX`}
+                          {...register(`cameras.${index}.cameraX`)}
+                          defaultValue={field.cameraX}
                           errors={errors}
                         />
                       </TableCell>
+
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.cameraY`}
+                          {...register(`cameras.${index}.cameraY`)}
+                          defaultValue={field.cameraY}
+                          errors={errors}
+                        />
+                      </TableCell>
+
+                      <TableCell>
+                        <TextField
+                          id={`cameras.${index}.cameraZ`}
+                          {...register(`cameras.${index}.cameraZ`)}
+                          defaultValue={field.cameraZ}
+                          errors={errors}
+                        />
+                      </TableCell>
+
                       <TableCell>
                         <TextField
                           id={`cameras.${index}.is_default`}
