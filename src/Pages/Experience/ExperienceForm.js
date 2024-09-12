@@ -481,6 +481,7 @@ const ExperienceForm = () => {
       cameraX,
       cameraY,
       cameraZ,
+      sequences,
       ...restOfData
     } = data;
 
@@ -547,6 +548,7 @@ const ExperienceForm = () => {
                 : control.is_control_active,
           })),
         ],
+
         products: products.map((item) => ({
           product: item.product?.value,
           is_active:
@@ -619,6 +621,37 @@ const ExperienceForm = () => {
             },
           },
         ],
+
+        sequences: sequences.map((sequence) => ({
+          ...sequence,
+          shots: sequence.shots.map((shot) => ({
+            ...shot,
+            is_first_shot:
+              shot.is_first_shot === "true"
+                ? true
+                : shot.is_first_shot === "false"
+                ? false
+                : shot.is_first_shot,
+            shot_controls: {
+              ...shot.shot_controls,
+              repeat_forever:
+                shot.shot_controls.repeat_forever === "true"
+                  ? true
+                  : shot.shot_controls.repeat_forever === "false"
+                  ? false
+                  : shot.shot_controls.repeat_forever,
+              back_to_start:
+                shot.shot_controls.back_to_start === "true"
+                  ? true
+                  : shot.shot_controls.back_to_start === "false"
+                  ? false
+                  : shot.shot_controls.back_to_start,
+            },
+            action: shot.action.map((action) => ({
+              ...action,
+            })),
+          })),
+        })),
       },
     };
     console.log("addPayload", addPayload);
