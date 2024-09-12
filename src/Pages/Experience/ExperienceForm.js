@@ -30,6 +30,7 @@ import {
   useAddExperience,
   useGetControlListData,
   useGetEnviromentListData,
+  useGetExperienceDataById,
   useGetProductListData,
 } from "./ExperienceServices";
 import { SequenceValuesForm } from "./SequenceForm";
@@ -286,6 +287,191 @@ const ExperienceForm = () => {
     }
   );
 
+  const { data: experienceData } = useGetExperienceDataById(id);
+  console.log("aaexperienceData", experienceData?.data?.experience);
+  const allExperienceData = experienceData?.data?.experience;
+
+  useEffect(() => {
+    if (!!id && !!experienceData) {
+      setValue("user_id", allExperienceData?.user_id);
+      setValue("project_id", allExperienceData?.project_id);
+      setValue("experience_id", allExperienceData?.experience_id);
+      setValue("environment", {
+        label: allExperienceData?.environment,
+        value: allExperienceData?.environment,
+      });
+
+      // Determine the mode based on boolean values
+      if (allExperienceData?.is_story_mode) {
+        setValue("mode", { label: "Story", value: "is_story_mode" });
+      } else if (allExperienceData?.is_collection_mode) {
+        setValue("mode", { label: "Collection", value: "is_collection_mode" });
+      } else if (allExperienceData?.is_showcase_mode) {
+        setValue("mode", { label: "Showcase", value: "is_showcase_mode" });
+      }
+    }
+  }, [allExperienceData, setValue, experienceData, id]);
+
+  // viewport prefill
+  useEffect(() => {
+    if (allExperienceData?.viewport?.length > 0 && !!id) {
+      setValue(
+        "viewport",
+        allExperienceData.viewport.map((view) => ({
+          viewport_name: view.viewport_name || "",
+          transition_lower_limit: view.transition_lower_limit || "",
+          transition_upper_limit: view.transition_upper_limit || "",
+          panel_position: view.panel_position || "",
+          panel_width: view.panel_width || "",
+          panel_height: view.panel_height || "",
+          is_canvas_fullscreen: view.is_canvas_fullscreen || false,
+          camera_adjustment_factor: view.camera_adjustment_factor || "",
+          camera_look_at_delta: view.camera_look_at_delta || "",
+        }))
+      );
+    }
+  }, [allExperienceData, setValue]);
+
+  // cameras prefill
+  useEffect(() => {
+    if (allExperienceData?.cameras?.length > 0 && !!id) {
+      // Clear the initial empty row
+      removeCameras();
+
+      // Loop through the camera data from API and append them to the form
+      allExperienceData?.cameras?.map((camera) => {
+        appendCameras({
+          camera_id: camera.camera_id || "",
+          camera_type: camera.camera_type || "",
+          camera_fov: camera.camera_fov || "",
+          camera_near: camera.camera_near || "",
+          camera_far: camera.camera_far || "",
+          cameraX: camera.camera_position?.x || "",
+          cameraY: camera.camera_position?.y || "",
+          cameraZ: camera.camera_position?.z || "",
+          is_default: camera.is_default === true ? true : false,
+        });
+      });
+    }
+  }, [allExperienceData?.cameras, setValue]);
+
+  // orbit control prefill
+  useEffect(() => {
+    if (allExperienceData?.orbit_control && !!id) {
+      const controlData = allExperienceData.orbit_control;
+      console.log("controlData", controlData); // Extract the single orbit control object
+      setValue("auto_rotate", {
+        label:
+          controlData?.auto_rotate === true
+            ? "True"
+            : controlData?.auto_rotate === false
+            ? "False"
+            : controlData?.auto_rotate,
+        value:
+          controlData?.auto_rotate === true
+            ? "true"
+            : controlData?.auto_rotate === false
+            ? "false"
+            : controlData?.auto_rotate,
+      });
+      setValue("enable_pan", {
+        label:
+          controlData?.enable_pan === true
+            ? "True"
+            : controlData?.enable_pan === false
+            ? "False"
+            : controlData?.enable_pan,
+        value:
+          controlData?.enable_pan === true
+            ? "true"
+            : controlData?.enable_pan === false
+            ? "false"
+            : controlData?.enable_pan,
+      });
+
+      setValue("enable_rotate", {
+        label:
+          controlData?.enable_rotate === true
+            ? "True"
+            : controlData?.enable_rotate === false
+            ? "False"
+            : controlData?.enable_rotate,
+        value:
+          controlData?.enable_rotate === true
+            ? "true"
+            : controlData?.enable_rotate === false
+            ? "false"
+            : controlData?.enable_rotate,
+      });
+
+      setValue("enable_zoom", {
+        label:
+          controlData?.enable_zoom === true
+            ? "True"
+            : controlData?.enable_zoom === false
+            ? "False"
+            : controlData?.enable_zoom,
+        value:
+          controlData?.enable_zoom === true
+            ? "true"
+            : controlData?.enable_zoom === false
+            ? "false"
+            : controlData?.enable_zoom,
+      });
+
+      setValue("enabled", {
+        label:
+          controlData?.enabled === "true"
+            ? "True"
+            : controlData?.enabled === "false"
+            ? "False"
+            : controlData?.enabled,
+      });
+
+      setValue("max_azimuth_angle", controlData?.max_azimuth_angle || "");
+      setValue("min_azimuth_angle", controlData?.min_azimuth_angle || "");
+      setValue("max_polar_angle", controlData?.max_polar_angle || "");
+      setValue("min_polar_angle", controlData?.min_polar_angle || "");
+      setValue("min_zoom", controlData?.min_zoom || "");
+      setValue("max_zoom", controlData?.max_zoom || "");
+      setValue("targetx", controlData?.target?.x || "");
+      setValue("targety", controlData?.target?.y || "");
+      setValue("targetz", controlData?.target?.z || "");
+    }
+  }, [allExperienceData, setValue]);
+
+  // control prefill
+  useEffect(() => {
+    if (allExperienceData?.controls?.length > 0 && !!id) {
+      removeControl();
+      allExperienceData?.controls?.map((control) => {
+        appendControl({
+          control_id: control.control_id || "",
+          is_control_active: {
+            label:
+              control.is_control_active === true
+                ? "True"
+                : control.is_control_active === false
+                ? "False"
+                : control.is_control_active,
+            value: control.is_control_active ? "true" : "false",
+          },
+          default_value: {
+            label:
+              control.default_value === "true"
+                ? "True"
+                : control.default_value === "false"
+                ? "False"
+                : control.default_value,
+            value: control.default_value ? "true" : "false",
+          },
+        });
+      });
+    }
+  }, [allExperienceData?.controls, setValue]);
+
+  // product
+
   const booleanList = [
     { label: "True", value: "true" },
     { label: "False", value: "false" },
@@ -499,7 +685,7 @@ const ExperienceForm = () => {
     const addPayload = {
       experience_item: {
         ...restOfData,
-        experience_id: "5145241", //remove
+        experience_id: data?.experience_id, //remove
         environment: data?.environment?.value,
 
         ...setModeFlags(data),

@@ -65,3 +65,12 @@ export const useGetProductListData = () => {
 
   return { data, error, isLoading };
 };
+
+export const useGetExperienceDataById = (id) => {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["experience_data_by_id"],
+    queryFn: () => httpClient.get(`/get_experience/${id}`),
+    enabled: !!id,
+  });
+  return { data, error, isLoading };
+};

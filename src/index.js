@@ -38,7 +38,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/edit-experience/:id",
-        element: <>{"update experience"}</>,
+        element: <ExperienceForm />,
       },
     ],
   },

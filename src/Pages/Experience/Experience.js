@@ -24,7 +24,7 @@ const Experience = () => {
   );
 
   const handleEdit = (row) => {
-    navigate(`/edit-experience/${row.model_id}`);
+    navigate(`/edit-experience/${row.experience_id}`);
   };
 
   const columns = useMemo(
