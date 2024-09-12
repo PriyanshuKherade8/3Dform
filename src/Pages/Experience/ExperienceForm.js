@@ -482,6 +482,7 @@ const ExperienceForm = () => {
       cameraY,
       cameraZ,
       sequences,
+      collections,
       ...restOfData
     } = data;
 
@@ -649,6 +650,31 @@ const ExperienceForm = () => {
             },
             action: shot.action.map((action) => ({
               ...action,
+            })),
+          })),
+        })),
+
+        collections: collections.map((collection) => ({
+          ...collection,
+          is_default:
+            collection.is_default === "true"
+              ? true
+              : collection.is_default === "false"
+              ? false
+              : collection.is_default,
+          items: collection.items.map((item) => ({
+            ...item,
+            is_first_item:
+              item.is_first_item === "true"
+                ? true
+                : item.is_first_item === "false"
+                ? false
+                : item.is_first_item,
+            item_icons: item.item_icons.map((icon) => ({
+              ...icon,
+            })),
+            property: item.property.map((prop) => ({
+              ...prop,
             })),
           })),
         })),
