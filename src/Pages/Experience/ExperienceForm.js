@@ -28,7 +28,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams } from "react-router-dom";
 import {
   useAddExperience,
+  useGetControlListData,
   useGetEnviromentListData,
+  useGetProductListData,
 } from "./ExperienceServices";
 import { SequenceValuesForm } from "./SequenceForm";
 import { CollectionValuesForm } from "./CollectionForm";
@@ -230,6 +232,7 @@ const ExperienceForm = () => {
     control,
     setValue,
     getValues,
+    watch,
     formState: { errors },
   } = useForm({
     // resolver: yupResolver(schema),
@@ -252,6 +255,27 @@ const ExperienceForm = () => {
   );
 
   const { mutate: addExperience } = useAddExperience();
+
+  const { data: controlListData } = useGetControlListData();
+  console.log("controlListData", controlListData);
+
+  const controlList = controlListData?.data?.controlList?.map((item) => {
+    return {
+      label: item?.control_name,
+      value: item?.id,
+    };
+  });
+  console.log("controlList", controlList);
+
+  const { data: productListData } = useGetProductListData();
+
+  const productList = productListData?.data?.productList?.map((item) => {
+    return {
+      label: item?.product_name,
+      value: item?.id,
+    };
+  });
+  console.log("controlList", controlList);
 
   const environmentList = environmentListData?.data?.environmentList?.map(
     (item) => {
@@ -447,37 +471,121 @@ const ExperienceForm = () => {
       max_zoom,
       target,
       mode,
+      controls,
+      products,
+      targetx,
+      targety,
+      targetz,
       ...restOfData
     } = data;
+
+    function setModeFlags(data) {
+      const modeValue = data?.mode?.value;
+
+      return {
+        is_story_mode: modeValue === "is_story_mode",
+        is_showcase_mode: modeValue === "is_showcase_mode",
+        is_collection_mode: modeValue === "is_collection_mode",
+      };
+    }
+
     const addPayload = {
-      experience: {
+      experience_item: {
         ...restOfData,
         experience_id: "5145241", //remove
         environment: data?.environment?.value,
-        // mode: data?.mode?.value,
 
-        is_story_mode: false,
-        is_showcase_mode: false,
-        is_collection_mode: true,
+        ...setModeFlags(data),
+        // controls: [...controls],
+        controls: [
+          ...controls.map((control) => ({
+            control_id: control.control_id?.value,
+            default_value:
+              control.default_value === "true"
+                ? true
+                : control.default_value === "false"
+                ? false
+                : control.default_value,
+            is_control_active:
+              control.is_control_active === "true"
+                ? true
+                : control.is_control_active === "false"
+                ? false
+                : control.is_control_active,
+          })),
+        ],
+        products: products.map((item) => ({
+          product: item.product?.value,
+          is_active:
+            item.is_active === "true"
+              ? true
+              : item.is_active === "false"
+              ? false
+              : item.is_active,
+          is_product_active:
+            item.is_product_active === "true"
+              ? true
+              : item.is_product_active === "false"
+              ? false
+              : item.is_product_active,
 
-        orbit_control: {
-          enabled: data?.enabled?.value,
-          auto_rotate: data?.auto_rotate?.value,
-          enable_pan: data?.enable_pan?.value,
-          enable_rotate: data?.enable_rotate?.value,
-          enable_zoom: data?.enable_zoom?.value,
-          max_azimuth_angle: data?.max_azimuth_angle,
-          min_azimuth_angle: data?.min_azimuth_angle,
-          max_polar_angle: data?.max_polar_angle,
-          min_polar_angle: data?.min_polar_angle,
-          min_zoom: data?.min_zoom,
-          max_zoom: data?.max_zoom,
-          target: {
-            x: "0",
-            y: "0.28",
-            z: "0",
+          custom_values: item.custom_values.map((custom) => ({
+            id: custom.id,
+            object: custom.object,
+            values: {
+              x: custom.values?.x,
+              y: custom.values?.y,
+              z: custom.values?.z,
+            },
+          })),
+          product_key: item.product_key,
+        })),
+
+        orbit_control: [
+          {
+            enabled:
+              data?.enabled?.value === "true"
+                ? true
+                : data?.enabled?.value === "false"
+                ? false
+                : data?.enabled?.value,
+            auto_rotate:
+              data?.auto_rotate?.value === "true"
+                ? true
+                : data?.auto_rotate?.value === "false"
+                ? false
+                : data?.auto_rotate?.value,
+            enable_pan:
+              data?.enable_pan?.value === "true"
+                ? true
+                : data?.enable_pan?.value === "false"
+                ? false
+                : data?.enable_pan?.value,
+            enable_rotate:
+              data?.enable_rotate?.value === "true"
+                ? true
+                : data?.enable_rotate?.value === "false"
+                ? false
+                : data?.enable_rotate?.value,
+            enable_zoom:
+              data?.enable_zoom?.value === "true"
+                ? true
+                : data?.enable_zoom?.value === "false"
+                ? false
+                : data?.enable_zoom?.value,
+            max_azimuth_angle: data?.max_azimuth_angle,
+            min_azimuth_angle: data?.min_azimuth_angle,
+            max_polar_angle: data?.max_polar_angle,
+            min_polar_angle: data?.min_polar_angle,
+            min_zoom: data?.min_zoom,
+            max_zoom: data?.max_zoom,
+            target: {
+              x: data?.targetx,
+              y: data?.targety,
+              z: data?.targetz,
+            },
           },
-        },
+        ],
       },
     };
     console.log("addPayload", addPayload);
@@ -518,6 +626,36 @@ const ExperienceForm = () => {
                 label="Environment"
                 control={control}
                 selectObj={environmentList}
+                errors={errors}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                id="user_id"
+                placeholder="Enter User ID"
+                label="user ID"
+                isRequired={true}
+                {...register("user_id")}
+                errors={errors}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                id="experience_id"
+                placeholder="Enter Project ID"
+                label="Project ID"
+                isRequired={true}
+                {...register("project_id")}
+                errors={errors}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                id="experience_id"
+                placeholder="Enter Experience ID"
+                label="Experience ID"
+                isRequired={true}
+                {...register("experience_id")}
                 errors={errors}
               />
             </Grid>
@@ -692,10 +830,13 @@ const ExperienceForm = () => {
                   {controlFields.map((field, index) => (
                     <TableRow key={field.id}>
                       <TableCell>
-                        <TextField
+                        <Dropdown
                           id={`controls.${index}.control_id`}
+                          placeholder="Select"
+                          control={control}
                           {...register(`controls.${index}.control_id`)}
                           defaultValue={field.control_id}
+                          selectObj={controlList}
                           errors={errors}
                         />
                       </TableCell>
@@ -996,11 +1137,31 @@ const ExperienceForm = () => {
                 </Grid>
                 <Grid item xs={12} md={3}>
                   <TextField
-                    id="target"
-                    placeholder="Enter target x,y,z format"
-                    label="Target"
+                    id="targetx"
+                    placeholder="Enter X"
+                    label="X"
                     isRequired={true}
-                    {...register("target")}
+                    {...register("targetx")}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="targety"
+                    placeholder="Enter Y"
+                    label="Y"
+                    isRequired={true}
+                    {...register("targety")}
+                    errors={errors}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    id="targetz"
+                    placeholder="Enter Z"
+                    label="Z"
+                    isRequired={true}
+                    {...register("targetz")}
                     errors={errors}
                   />
                 </Grid>
@@ -1030,12 +1191,14 @@ const ExperienceForm = () => {
                       />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                      <TextField
+                      <Dropdown
                         id={`products.${index}.product`}
-                        label="Product"
-                        defaultValue={field.product}
-                        isRequired={true}
+                        label={"Product"}
+                        placeholder="Select"
+                        control={control}
                         {...register(`products.${index}.product`)}
+                        defaultValue={field.control_id}
+                        selectObj={productList}
                         errors={errors}
                       />
                     </Grid>

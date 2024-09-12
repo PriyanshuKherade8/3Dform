@@ -384,7 +384,8 @@ function Dropdown({
             }}
             error={errors?.[id]}
             styles={customStyles}
-            menuPortalTarget={menuPortalTarget}
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
             noOptionsMessage={() => noOptionMessage}
           />
         )}

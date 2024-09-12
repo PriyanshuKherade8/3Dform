@@ -47,3 +47,21 @@ export const useAddExperience = () => {
 
   return { mutate, isLoading, data, error };
 };
+
+export const useGetControlListData = () => {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["control_list"],
+    queryFn: () => httpClient.get("/get_control_list"),
+  });
+
+  return { data, error, isLoading };
+};
+
+export const useGetProductListData = () => {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["product_list"],
+    queryFn: () => httpClient.get("/get_product_list"),
+  });
+
+  return { data, error, isLoading };
+};
