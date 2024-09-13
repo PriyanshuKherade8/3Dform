@@ -74,3 +74,29 @@ export const useGetExperienceDataById = (id) => {
   });
   return { data, error, isLoading };
 };
+
+export const useUpdateExperienceData = () => {
+  const navigate = useNavigate();
+  const { mutate, isLoading, data, error } = useMutation({
+    mutationFn: async (payload) => {
+      const response = await httpClient.post("/modify_experience", payload);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data?.message) {
+        Swal.fire({
+          icon: "success",
+          title: "Experience data updated successfully",
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result?.isConfirmed) {
+            navigate(`/experience-list`);
+          }
+        });
+      }
+      queryClient.invalidateQueries(["experience_list"]);
+    },
+  });
+
+  return { mutate, isLoading, data, error };
+};

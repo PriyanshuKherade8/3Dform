@@ -32,6 +32,7 @@ import {
   useGetEnviromentListData,
   useGetExperienceDataById,
   useGetProductListData,
+  useUpdateExperienceData,
 } from "./ExperienceServices";
 import { SequenceValuesForm } from "./SequenceForm";
 import { CollectionValuesForm } from "./CollectionForm";
@@ -255,6 +256,7 @@ const ExperienceForm = () => {
   );
 
   const { mutate: addExperience } = useAddExperience();
+  const { mutate: updateExperience } = useUpdateExperienceData();
 
   const { data: controlListData } = useGetControlListData();
   console.log("controlListData", controlListData);
@@ -329,7 +331,7 @@ const ExperienceForm = () => {
         }))
       );
     }
-  }, [allExperienceData, setValue]);
+  }, [allExperienceData, setValue, id]);
 
   // cameras prefill
   useEffect(() => {
@@ -357,7 +359,8 @@ const ExperienceForm = () => {
   // orbit control prefill
   useEffect(() => {
     if (allExperienceData?.orbit_control && !!id) {
-      const controlData = allExperienceData.orbit_control;
+      // const controlData = allExperienceData.orbit_control;
+      const controlData = allExperienceData.orbit_control?.[0];
       console.log("controlData", controlData); // Extract the single orbit control object
       setValue("auto_rotate", {
         label:
@@ -420,9 +423,15 @@ const ExperienceForm = () => {
 
       setValue("enabled", {
         label:
-          controlData?.enabled === "true"
+          controlData?.enabled === "true" || controlData?.enabled === true
             ? "True"
-            : controlData?.enabled === "false"
+            : controlData?.enabled === "false" || controlData?.enabled === false
+            ? "False"
+            : controlData?.enabled,
+        value:
+          controlData?.enabled === "true" || controlData?.enabled === true
+            ? "True"
+            : controlData?.enabled === "false" || controlData?.enabled === false
             ? "False"
             : controlData?.enabled,
       });
@@ -437,7 +446,7 @@ const ExperienceForm = () => {
       setValue("targety", controlData?.target?.y || "");
       setValue("targetz", controlData?.target?.z || "");
     }
-  }, [allExperienceData, setValue]);
+  }, [allExperienceData, id, setValue]);
 
   // control prefill
   useEffect(() => {
@@ -529,6 +538,105 @@ const ExperienceForm = () => {
       });
     }
   }, [allExperienceData?.products, id]);
+
+  // sequence prefill
+  useEffect(() => {
+    if (allExperienceData?.sequences?.length > 0 && !!id) {
+      removeSequence(); // Remove any existing data
+
+      allExperienceData?.sequences?.forEach((sequence) => {
+        appendSequence({
+          sequence_id: sequence.sequence_id || "",
+
+          shots: sequence.shots.map((shot) => ({
+            shot_id: shot.shot_id || "",
+            // is_first_shot: shot.is_first_shot ? "true" : "false",
+            is_first_shot:
+              shot.is_first_shot === true
+                ? "true"
+                : shot.is_first_shot === false
+                ? "false"
+                : shot.is_first_shot,
+            previous_shot: shot.previous_shot || "",
+            shot_controls: {
+              duration: shot.shot_controls?.duration || "",
+              repeat: shot.shot_controls?.repeat || "",
+              repeat_forever:
+                shot.shot_controls?.repeat_forever === true
+                  ? "true"
+                  : shot.shot_controls?.repeat_forever === false
+                  ? "false"
+                  : shot.shot_controls?.repeat_forever,
+              back_to_start:
+                shot.shot_controls?.back_to_start === true
+                  ? "true"
+                  : shot.shot_controls?.back_to_start === false
+                  ? "false"
+                  : shot.shot_controls?.back_to_start,
+              easing_function: shot.shot_controls?.easing_function || "",
+              easing_type: shot.shot_controls?.easing_type || "",
+            },
+            action: shot.action.map((act) => ({
+              action_id: act.action_id || "",
+              action_object_type: act.action_object_type || "",
+              action_type: act.action_type || "",
+              action_property: act.action_property || "",
+              action_values: {
+                x: act.action_values?.x || "",
+                y: act.action_values?.y || "",
+                z: act.action_values?.z || "",
+              },
+            })),
+          })),
+        });
+      });
+    }
+  }, [allExperienceData?.sequences, id]);
+
+  // collection prefill
+  useEffect(() => {
+    if (allExperienceData?.collections?.length > 0 && !!id) {
+      removeCollections(); // Remove any existing collections
+
+      allExperienceData?.collections.forEach((collection) => {
+        appendCollections({
+          collection_id: collection.collection_id || "",
+          // is_default: collection.is_default ? "true" : "false",
+          is_default:
+            collection.is_default === true
+              ? "true"
+              : collection.is_default === false
+              ? "false"
+              : collection.is_default,
+
+          items: collection.items.map((item) => ({
+            item_id: item.item_id || "",
+            // is_first_item: item.is_first_item ? "true" : "false",
+            is_first_item:
+              item.is_first_item === true
+                ? "true"
+                : item.is_first_item === false
+                ? "false"
+                : item.is_first_item,
+            item_display_short_title: item.item_display_short_title || "",
+            item_display_long_title: item.item_display_long_title || "",
+
+            item_icons: item.item_icons.map((icon) => ({
+              file_type: icon.file_type || "",
+              path: icon.path || "",
+            })),
+
+            property: item.property.map((prop) => ({
+              property_id: prop.property_id || "",
+            })),
+
+            interactions: item.interactions || [],
+            product_key: item.product_key || "",
+          })),
+        });
+      });
+    }
+  }, [allExperienceData?.collections, id]);
 
   const booleanList = [
     { label: "True", value: "true" },
@@ -727,6 +835,7 @@ const ExperienceForm = () => {
       cameraZ,
       sequences,
       collections,
+      experience_id,
       ...restOfData
     } = data;
 
@@ -924,8 +1033,194 @@ const ExperienceForm = () => {
         })),
       },
     };
-    console.log("addPayload", addPayload);
-    addExperience(addPayload);
+
+    const updatePayload = {
+      experience_id: id,
+      experience_item: {
+        ...restOfData,
+        experience_id: data?.experience_id, //remove
+        environment: data?.environment?.value,
+
+        ...setModeFlags(data),
+        viewport: viewport.map((item) => ({
+          ...item,
+          is_canvas_fullscreen:
+            item?.is_canvas_fullscreen === "true"
+              ? true
+              : item?.is_canvas_fullscreen === "false"
+              ? false
+              : item?.is_canvas_fullscreen,
+        })),
+
+        cameras: cameras.map((item) => {
+          const { cameraX, cameraY, cameraZ, ...restOfItem } = item;
+
+          return {
+            ...restOfItem,
+            is_default:
+              item?.is_default === "true"
+                ? true
+                : item?.is_default === "false"
+                ? false
+                : item?.is_default,
+            camera_position: {
+              x: item?.cameraX,
+              y: item?.cameraY,
+              z: item?.cameraZ,
+            },
+          };
+        }),
+
+        controls: [
+          ...controls.map((control) => ({
+            control_id: control.control_id?.value,
+            default_value:
+              control.default_value?.value === "true"
+                ? true
+                : control.default_value?.value === "false"
+                ? false
+                : control.default_value,
+            is_control_active:
+              control.is_control_active?.value === "true"
+                ? true
+                : control.is_control_active?.value === "false"
+                ? false
+                : control.is_control_active,
+          })),
+        ],
+
+        products: products.map((item) => ({
+          product: item.product?.value,
+          is_active:
+            item.is_active?.value === "true"
+              ? true
+              : item.is_active?.value === "false"
+              ? false
+              : item.is_active,
+          is_product_active:
+            item.is_product_active?.value === "true"
+              ? true
+              : item.is_product_active?.value === "false"
+              ? false
+              : item.is_product_active,
+
+          custom_values: item.custom_values.map((custom) => ({
+            id: custom.id,
+            object: custom.object,
+            values: {
+              x: custom.values?.x,
+              y: custom.values?.y,
+              z: custom.values?.z,
+            },
+          })),
+          product_key: item.product_key,
+        })),
+
+        orbit_control: [
+          {
+            enabled:
+              data?.enabled?.value === "true"
+                ? true
+                : data?.enabled?.value === "false"
+                ? false
+                : data?.enabled?.value,
+            auto_rotate:
+              data?.auto_rotate?.value === "true"
+                ? true
+                : data?.auto_rotate?.value === "false"
+                ? false
+                : data?.auto_rotate?.value,
+            enable_pan:
+              data?.enable_pan?.value === "true"
+                ? true
+                : data?.enable_pan?.value === "false"
+                ? false
+                : data?.enable_pan?.value,
+            enable_rotate:
+              data?.enable_rotate?.value === "true"
+                ? true
+                : data?.enable_rotate?.value === "false"
+                ? false
+                : data?.enable_rotate?.value,
+            enable_zoom:
+              data?.enable_zoom?.value === "true"
+                ? true
+                : data?.enable_zoom?.value === "false"
+                ? false
+                : data?.enable_zoom?.value,
+            max_azimuth_angle: data?.max_azimuth_angle,
+            min_azimuth_angle: data?.min_azimuth_angle,
+            max_polar_angle: data?.max_polar_angle,
+            min_polar_angle: data?.min_polar_angle,
+            min_zoom: data?.min_zoom,
+            max_zoom: data?.max_zoom,
+            target: {
+              x: data?.targetx,
+              y: data?.targety,
+              z: data?.targetz,
+            },
+          },
+        ],
+
+        sequences: sequences.map((sequence) => ({
+          ...sequence,
+          shots: sequence.shots.map((shot) => ({
+            ...shot,
+            is_first_shot:
+              shot.is_first_shot === "true"
+                ? true
+                : shot.is_first_shot === "false"
+                ? false
+                : shot.is_first_shot,
+            shot_controls: {
+              ...shot.shot_controls,
+              repeat_forever:
+                shot.shot_controls.repeat_forever === "true"
+                  ? true
+                  : shot.shot_controls.repeat_forever === "false"
+                  ? false
+                  : shot.shot_controls.repeat_forever,
+              back_to_start:
+                shot.shot_controls.back_to_start === "true"
+                  ? true
+                  : shot.shot_controls.back_to_start === "false"
+                  ? false
+                  : shot.shot_controls.back_to_start,
+            },
+            action: shot.action.map((action) => ({
+              ...action,
+            })),
+          })),
+        })),
+
+        collections: collections.map((collection) => ({
+          ...collection,
+          is_default:
+            collection.is_default === "true"
+              ? true
+              : collection.is_default === "false"
+              ? false
+              : collection.is_default,
+          items: collection.items.map((item) => ({
+            ...item,
+            is_first_item:
+              item.is_first_item === "true"
+                ? true
+                : item.is_first_item === "false"
+                ? false
+                : item.is_first_item,
+            item_icons: item.item_icons.map((icon) => ({
+              ...icon,
+            })),
+            property: item.property.map((prop) => ({
+              ...prop,
+            })),
+          })),
+        })),
+      },
+    };
+    console.log("updatePayload", updatePayload);
+    !!id ? updateExperience(updatePayload) : addExperience(addPayload);
   };
 
   return (
@@ -1174,6 +1469,7 @@ const ExperienceForm = () => {
                           defaultValue={field.control_id}
                           selectObj={controlList}
                           errors={errors}
+                          isDisabled={!!id}
                         />
                       </TableCell>
                       <TableCell>
@@ -1565,6 +1861,7 @@ const ExperienceForm = () => {
                         defaultValue={field.control_id}
                         selectObj={productList}
                         errors={errors}
+                        isDisabled={!!id}
                       />
                     </Grid>
                     <Grid item xs={12} md={3}>
