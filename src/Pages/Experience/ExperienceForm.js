@@ -296,7 +296,7 @@ const ExperienceForm = () => {
     if (!!id && !!experienceData) {
       setValue("user_id", allExperienceData?.user_id);
       setValue("project_id", allExperienceData?.project_id);
-      setValue("experience_id", allExperienceData?.experience_id);
+      // setValue("experience_id", allExperienceData?.experience_id);
       setValue("environment", {
         label: allExperienceData?.environment,
         value: allExperienceData?.environment,
@@ -314,24 +314,43 @@ const ExperienceForm = () => {
   }, [allExperienceData, setValue, experienceData, id]);
 
   // viewport prefill
+  // useEffect(() => {
+  //   if (allExperienceData?.viewport?.length > 0 && !!id) {
+  //     setValue(
+  //       "viewport",
+  //       allExperienceData.viewport.map((view) => ({
+  //         viewport_name: view.viewport_name || "",
+  //         transition_lower_limit: view.transition_lower_limit || "",
+  //         transition_upper_limit: view.transition_upper_limit || "",
+  //         panel_position: view.panel_position || "",
+  //         panel_width: view.panel_width || "",
+  //         panel_height: view.panel_height || "",
+  //         is_canvas_fullscreen: view.is_canvas_fullscreen || false,
+  //         camera_adjustment_factor: view.camera_adjustment_factor || "",
+  //         camera_look_at_delta: view.camera_look_at_delta || "",
+  //       }))
+  //     );
+  //   }
+  // }, [allExperienceData?.viewport, setValue, id]);
   useEffect(() => {
     if (allExperienceData?.viewport?.length > 0 && !!id) {
-      setValue(
-        "viewport",
-        allExperienceData.viewport.map((view) => ({
+      removeViewport();
+      allExperienceData?.viewport?.map((view) => {
+        appendViewport({
           viewport_name: view.viewport_name || "",
           transition_lower_limit: view.transition_lower_limit || "",
           transition_upper_limit: view.transition_upper_limit || "",
           panel_position: view.panel_position || "",
           panel_width: view.panel_width || "",
           panel_height: view.panel_height || "",
-          is_canvas_fullscreen: view.is_canvas_fullscreen || false,
+          is_canvas_fullscreen:
+            view.is_canvas_fullscreen === true ? true : false,
           camera_adjustment_factor: view.camera_adjustment_factor || "",
           camera_look_at_delta: view.camera_look_at_delta || "",
-        }))
-      );
+        });
+      });
     }
-  }, [allExperienceData, setValue, id]);
+  }, [allExperienceData?.viewport, setValue, id]);
 
   // cameras prefill
   useEffect(() => {
@@ -835,7 +854,7 @@ const ExperienceForm = () => {
       cameraZ,
       sequences,
       collections,
-      experience_id,
+      // experience_id,
       ...restOfData
     } = data;
 
@@ -852,7 +871,7 @@ const ExperienceForm = () => {
     const addPayload = {
       experience_item: {
         ...restOfData,
-        experience_id: data?.experience_id, //remove
+        // experience_id: data?.experience_id, //remove
         environment: data?.environment?.value,
 
         ...setModeFlags(data),
@@ -1036,9 +1055,9 @@ const ExperienceForm = () => {
 
     const updatePayload = {
       experience_id: id,
-      experience_item: {
+      item: {
         ...restOfData,
-        experience_id: data?.experience_id, //remove
+        // experience_id: data?.experience_id, //remove
         environment: data?.environment?.value,
 
         ...setModeFlags(data),
@@ -1272,7 +1291,7 @@ const ExperienceForm = () => {
             </Grid>
             <Grid item xs={12} md={3}>
               <TextField
-                id="experience_id"
+                id="project_id"
                 placeholder="Enter Project ID"
                 label="Project ID"
                 isRequired={true}
@@ -1280,7 +1299,7 @@ const ExperienceForm = () => {
                 errors={errors}
               />
             </Grid>
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="experience_id"
                 placeholder="Enter Experience ID"
@@ -1289,7 +1308,7 @@ const ExperienceForm = () => {
                 {...register("experience_id")}
                 errors={errors}
               />
-            </Grid>
+            </Grid> */}
           </Grid>
 
           {/* Viewport Section */}
@@ -1469,7 +1488,7 @@ const ExperienceForm = () => {
                           defaultValue={field.control_id}
                           selectObj={controlList}
                           errors={errors}
-                          isDisabled={!!id}
+                          // isDisabled={!!field.control_id}
                         />
                       </TableCell>
                       <TableCell>
@@ -1858,10 +1877,10 @@ const ExperienceForm = () => {
                         placeholder="Select"
                         control={control}
                         {...register(`products.${index}.product`)}
-                        defaultValue={field.control_id}
+                        defaultValue={field.product}
                         selectObj={productList}
                         errors={errors}
-                        isDisabled={!!id}
+                        // isDisabled={!!field.product}
                       />
                     </Grid>
                     <Grid item xs={12} md={3}>
