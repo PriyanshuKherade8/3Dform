@@ -163,7 +163,6 @@ const ExperienceForm = () => {
       is_active: "",
       product: "",
       is_product_active: "",
-      // custom_values: [],
       custom_values: [{ id: "", object: "", values: { x: "", y: "", z: "" } }],
       product_key: "",
     },
@@ -454,7 +453,12 @@ const ExperienceForm = () => {
                 : control.is_control_active === false
                 ? "False"
                 : control.is_control_active,
-            value: control.is_control_active ? "true" : "false",
+            value:
+              control.is_control_active === true
+                ? "true"
+                : control.is_control_active === false
+                ? "false"
+                : control.is_control_active,
           },
           default_value: {
             label:
@@ -463,14 +467,68 @@ const ExperienceForm = () => {
                 : control.default_value === "false"
                 ? "False"
                 : control.default_value,
-            value: control.default_value ? "true" : "false",
+            value:
+              control.default_value === "true"
+                ? "true"
+                : control.default_value === "false"
+                ? "false"
+                : control.default_value,
           },
         });
       });
     }
-  }, [allExperienceData?.controls, setValue]);
+  }, [allExperienceData?.controls, setValue, id]);
 
-  // product
+  // product prefill
+  useEffect(() => {
+    if (allExperienceData?.products?.length > 0 && !!id) {
+      removeProducts();
+
+      allExperienceData?.products?.forEach((product) => {
+        appendProducts({
+          is_active: {
+            label:
+              product.is_active === true
+                ? "True"
+                : product.is_active === false
+                ? "False"
+                : product.is_active,
+            value:
+              product.is_active === true
+                ? "true"
+                : product.is_active === false
+                ? "false"
+                : product.is_active,
+          },
+          product: product.product || "",
+          is_product_active: {
+            label:
+              product.is_product_active === true
+                ? "True"
+                : product.is_product_active === false
+                ? "False"
+                : product.is_product_active,
+            value:
+              product.is_product_active === true
+                ? "true"
+                : product.is_product_active === false
+                ? "false"
+                : product.is_product_active,
+          },
+          custom_values: product.custom_values.map((customValue) => ({
+            id: customValue.id || "",
+            object: customValue.object || "",
+            values: {
+              x: customValue.values.x || "",
+              y: customValue.values.y || "",
+              z: customValue.values.z || "",
+            },
+          })),
+          product_key: product.product_key || "",
+        });
+      });
+    }
+  }, [allExperienceData?.products, id]);
 
   const booleanList = [
     { label: "True", value: "true" },
