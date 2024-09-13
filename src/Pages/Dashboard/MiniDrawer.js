@@ -20,7 +20,9 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { Outlet, Link } from "react-router-dom";
 import { PrimaryColor } from "../../Styles/GlobalStyles/GlobalStyles";
-
+import ModelTrainingIcon from "@mui/icons-material/ModelTraining";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
 // Drawer width
 const drawerWidth = 240;
 
@@ -163,7 +165,7 @@ export default function MiniDrawer() {
                     drawerOpen ? { mr: 3 } : { mr: "auto" },
                   ]}
                 >
-                  <InboxIcon sx={{ color: "white" }} />
+                  <ModelTrainingIcon sx={{ color: "white" }} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Model List"
@@ -196,6 +198,35 @@ export default function MiniDrawer() {
                 </ListItemIcon>
                 <ListItemText
                   primary="Experience list"
+                  sx={[
+                    drawerOpen
+                      ? { opacity: 1, color: "white" }
+                      : { opacity: 0 },
+                  ]}
+                />
+              </ListItemButton>
+            </StyledLink>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <StyledLink to="/variant-list">
+              <ListItemButton
+                sx={[
+                  { minHeight: 48, px: 2.5 },
+                  drawerOpen
+                    ? { justifyContent: "initial" }
+                    : { justifyContent: "center" },
+                ]}
+              >
+                <Inventory2Icon
+                  sx={[
+                    { minWidth: 0, justifyContent: "center" },
+                    drawerOpen ? { mr: 3 } : { mr: "auto" },
+                  ]}
+                >
+                  <MailIcon sx={{ color: "white" }} />
+                </Inventory2Icon>
+                <ListItemText
+                  primary="Variant list"
                   sx={[
                     drawerOpen
                       ? { opacity: 1, color: "white" }

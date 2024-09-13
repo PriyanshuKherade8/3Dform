@@ -10,6 +10,8 @@ import ModelList from "./Pages/ModelPage/ModelList.js";
 import MiniDrawer from "./Pages/Dashboard/MiniDrawer";
 import Experience from "./Pages/Experience/Experience.js";
 import ExperienceForm from "./Pages/Experience/ExperienceForm.js";
+import VariantList from "./Pages/Variant/VariantList.js";
+import VariantForm from "./Pages/Variant/VariantForm.js";
 
 const router = createBrowserRouter([
   {
@@ -25,11 +27,11 @@ const router = createBrowserRouter([
         element: <ModelForm />,
       },
       {
-        path: "edit-model/:id",
+        path: "/edit-model/:id",
         element: <ModelForm />,
       },
       {
-        path: "experience-list",
+        path: "/experience-list",
         element: <Experience />,
       },
       {
@@ -39,6 +41,14 @@ const router = createBrowserRouter([
       {
         path: "/edit-experience/:id",
         element: <ExperienceForm />,
+      },
+      {
+        path: "/variant-list",
+        element: <VariantList />,
+      },
+      {
+        path: "/add-variant",
+        element: <VariantForm />,
       },
     ],
   },
