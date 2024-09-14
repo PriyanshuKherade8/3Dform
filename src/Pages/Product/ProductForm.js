@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import {
   Box,
   Button,
+  CardActions,
   Grid,
   Paper,
   Table,
@@ -34,6 +35,29 @@ const ProductForm = () => {
     },
   ];
 
+  const initialDimensions = [
+    {
+      dimension_id: "",
+      link_id: "",
+      object_link_id: "",
+      is_line: "",
+      line_color: "",
+      line_scale: "",
+      line_offset: "",
+      width: "",
+      height: "",
+      is_border: "",
+      border_width: "",
+      border_color: "",
+      is_background: "",
+      background_color: "",
+      font_type: "",
+      font_color: "",
+      values: { x: "", y: "", z: "" },
+      // values: [{ key: "", value: "" }],
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -43,6 +67,7 @@ const ProductForm = () => {
   } = useForm({
     defaultValues: {
       components: initialComponent, // Set initial component value here
+      dimensions: initialDimensions,
     },
   });
 
@@ -56,12 +81,44 @@ const ProductForm = () => {
     name: "components",
   });
 
+  const {
+    fields: dimensionsFields,
+    append: appendDimensions,
+    remove: removeDimensions,
+  } = useFieldArray({
+    control,
+    name: "dimensions",
+  });
+
   // Add new row function for components
   const addComponentRow = () => {
     appendComponent({
       component_id: "",
       model: "",
       link_id: "",
+    });
+  };
+
+  const addDimensionsRow = () => {
+    appendDimensions({
+      dimension_id: "",
+      link_id: "",
+      object_link_id: "",
+      is_line: "",
+      line_color: "",
+      line_scale: "",
+      line_offset: "",
+      width: "",
+      height: "",
+      is_border: "",
+      border_width: "",
+      border_color: "",
+      is_background: "",
+      background_color: "",
+      font_type: "",
+      font_color: "",
+      values: { x: "", y: "", z: "" },
+      // values: [{ key: "", value: "" }],
     });
   };
 
@@ -196,10 +253,377 @@ const ProductForm = () => {
               </Table>
             </TableContainer>
           </Box>
+          {/* Dimension Section */}
+          <Box mt={3}>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Dimensions</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <CustomPaper variant="outlined">
+              <Box style={{ padding: "8px", width: "100%" }}>
+                {dimensionsFields.map((field, index) => (
+                  <Grid container spacing={1} key={field.id}>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.dimension_id`}
+                        label="Dimension Id"
+                        defaultValue={field.dimension_id}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.dimension_id`)}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.link_id`}
+                        label="Link ID"
+                        defaultValue={field.link_id}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.link_id`)}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.object_link_id`}
+                        label="Object Link ID"
+                        defaultValue={field.object_link_id}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.object_link_id`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.is_line`}
+                        label="Is Line"
+                        defaultValue={field.is_line}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.is_line`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.line_color`}
+                        label="Line Color"
+                        defaultValue={field.line_color}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.line_color`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.line_scale`}
+                        label="Line Scale"
+                        defaultValue={field.line_scale}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.line_scale`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.line_offset`}
+                        label="Line Offset"
+                        defaultValue={field.line_offset}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.line_offset`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.width`}
+                        label="Width"
+                        defaultValue={field.width}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.width`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.height`}
+                        label="Height"
+                        defaultValue={field.height}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.height`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.is_border`}
+                        label="Is Border"
+                        defaultValue={field.is_border}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.is_border`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.border_width`}
+                        label="Border Width"
+                        defaultValue={field.border_width}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.border_width`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.border_color`}
+                        label="Border Color"
+                        defaultValue={field.border_color}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.border_color`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.is_background`}
+                        label="Is Background"
+                        defaultValue={field.is_background}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.is_background`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.background_color`}
+                        label="Background Color"
+                        defaultValue={field.background_color}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.background_color`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.font_type`}
+                        label="Font Type"
+                        defaultValue={field.font_type}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.font_type`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`dimensions.${index}.font_color`}
+                        label="Font Color"
+                        defaultValue={field.font_color}
+                        isRequired={true}
+                        {...register(`dimensions.${index}.font_color`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    {/* <Box mt={2}>
+                      <CustomValuesForm
+                        control={control}
+                        productIndex={index}
+                        register={register}
+                        errors={errors}
+                      />
+                    </Box> */}
+
+                    {/* Add/Remove Buttons aligned to the right */}
+                    <Grid item xs={12}>
+                      <Grid container justifyContent="flex-end" spacing={2}>
+                        {/* Remove Button - Only show if there's more than one row */}
+                        {dimensionsFields.length !== 1 && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              size="small"
+                              onClick={() => removeDimensions(index)}
+                              style={{
+                                backgroundColor: DeleteColor,
+                                color: TextColor,
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </Grid>
+                        )}
+
+                        {/* Add Button only on the last row */}
+                        {dimensionsFields.length - 1 === index && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="contained"
+                              onClick={addDimensionsRow}
+                              size="small"
+                              style={{ backgroundColor: PrimaryColor }}
+                            >
+                              Add
+                            </Button>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                ))}
+              </Box>
+            </CustomPaper>
+          </Box>
+          {/* button section */}
+          <CardActions
+            style={{ justifyContent: "flex-end", marginTop: "16px" }}
+          >
+            <Button
+              type="submit"
+              variant="contained"
+              style={{ backgroundColor: PrimaryColor }}
+            >
+              {id ? "Update" : "Submit"}
+            </Button>
+          </CardActions>
         </form>
       </CustomPaper>
     </CustomLayout>
   );
 };
+
+// const CustomValuesForm = ({ control, productIndex, register, errors }) => {
+//   // Field array for dynamic custom_values
+//   const {
+//     fields: customValuesFields,
+//     append: appendCustomValue,
+//     remove: removeCustomValue,
+//   } = useFieldArray({
+//     control,
+//     name: `dimensions.${productIndex}.values`,
+//     defaultValues: [{ values: { x: "", y: "", z: "" } }],
+//   });
+
+//   // Function to add a new custom value row
+//   const addCustomValueRow = () => {
+//     appendCustomValue({
+//       values: { x: "", y: "", z: "" },
+//     });
+//   };
+//   console.log("524151", customValuesFields, productIndex);
+//   return (
+//     <Box mt={3}>
+//       <CustomPaper variant="outlined">
+//         <CustomTypographyForTitle>
+//           <Typography
+//             variant="subtitle2"
+//             style={{ fontWeight: "550", fontSize: "16px" }}
+//           >
+//             Custom Values
+//           </Typography>
+//         </CustomTypographyForTitle>
+//       </CustomPaper>
+//       <TableContainer component={Paper} variant="outlined">
+//         <Table>
+//           <TableBody>
+//             {/* Table Header */}
+//             <TableRow>
+//               <TableCell>X</TableCell>
+//               <TableCell>Y</TableCell>
+//               <TableCell>Z</TableCell>
+//               <TableCell>{/* Action Buttons */}</TableCell>
+//             </TableRow>
+
+//             {customValuesFields.map((customValueField, customValueIndex) => (
+//               <TableRow key={customValueField.id}>
+//                 <TableCell>
+//                   <TextField
+//                     // label="X"
+//                     defaultValue={customValueField.values.x}
+//                     {...register(
+//                       `dimensions.${productIndex}.values.${customValueIndex}.values.x`
+//                     )}
+//                     errors={errors}
+//                   />
+//                 </TableCell>
+//                 <TableCell>
+//                   <TextField
+//                     // label="Y"
+//                     defaultValue={customValueField.values.y}
+//                     {...register(
+//                       `dimensions.${productIndex}.values.${customValueIndex}.values.y`
+//                     )}
+//                     errors={errors}
+//                   />
+//                 </TableCell>
+//                 <TableCell>
+//                   <TextField
+//                     // label="Z"
+//                     defaultValue={customValueField.values.z}
+//                     {...register(
+//                       `dimensions.${productIndex}.values.${customValueIndex}.values.z`
+//                     )}
+//                     errors={errors}
+//                   />
+//                 </TableCell>
+
+//                 {/* Add/Remove buttons for custom values */}
+//                 <TableCell>
+//                   <Grid container justifyContent="flex-end" spacing={2}>
+//                     {customValuesFields.length > 1 && (
+//                       <Grid item>
+//                         <Button
+//                           variant="outlined"
+//                           style={{
+//                             backgroundColor: DeleteColor,
+//                             color: TextColor,
+//                           }}
+//                           size="small"
+//                           onClick={() => removeCustomValue(customValueIndex)}
+//                         >
+//                           Remove
+//                         </Button>
+//                       </Grid>
+//                     )}
+//                     {customValueIndex === customValuesFields.length - 1 && (
+//                       <Grid item>
+//                         <Button
+//                           variant="contained"
+//                           size="small"
+//                           onClick={addCustomValueRow}
+//                           style={{
+//                             backgroundColor: PrimaryColor,
+//                             color: TextColor,
+//                           }}
+//                         >
+//                           Add
+//                         </Button>
+//                       </Grid>
+//                     )}
+//                   </Grid>
+//                 </TableCell>
+//               </TableRow>
+//             ))}
+//           </TableBody>
+//         </Table>
+//       </TableContainer>
+//     </Box>
+//   );
+// };
 
 export default ProductForm;
