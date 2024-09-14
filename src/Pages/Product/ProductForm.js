@@ -41,10 +41,12 @@ const ProductForm = () => {
     setValue,
     formState: { errors },
   } = useForm({
-    components: initialComponent,
+    defaultValues: {
+      components: initialComponent, // Set initial component value here
+    },
   });
 
-  // Field array for dynamic viewport fields
+  // Field array for dynamic component fields
   const {
     fields: viewComponentFields,
     append: appendComponent,
@@ -54,7 +56,7 @@ const ProductForm = () => {
     name: "components",
   });
 
-  // Add new row functions for both viewports and controls
+  // Add new row function for components
   const addComponentRow = () => {
     appendComponent({
       component_id: "",
@@ -66,6 +68,7 @@ const ProductForm = () => {
   const onSubmit = (data) => {
     console.log("productdata", data);
   };
+
   return (
     <CustomLayout>
       <CustomPaper variant="outlined">
@@ -92,7 +95,7 @@ const ProductForm = () => {
               <TextField
                 id="user_id"
                 placeholder="Enter User ID"
-                label="user ID"
+                label="User ID"
                 isRequired={true}
                 {...register("user_id")}
                 errors={errors}
@@ -108,8 +111,8 @@ const ProductForm = () => {
                 errors={errors}
               />
             </Grid>
-            {/* <Grid item xs={12} md={3}></Grid> */}
           </Grid>
+
           {/* Component Section */}
           <Box mt={3}>
             <CustomPaper variant="outlined">
