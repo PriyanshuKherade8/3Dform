@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 import TextField from "../../Components/TextField/TextField";
+import { PropertyForm } from "./PropertyForm";
 
 const ProductForm = () => {
   const { id } = useParams();
@@ -57,6 +58,25 @@ const ProductForm = () => {
     },
   ];
 
+  const initialProperty = [
+    {
+      property_id: "",
+      property_name: "",
+      property_type: "",
+      is_active: "",
+      is_player_config: "",
+      display_name: "",
+      link_id: [{ link_id: "" }],
+      variants: [
+        {
+          variant_id: "",
+          is_active: "",
+          is_default: "",
+        },
+      ],
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -67,6 +87,7 @@ const ProductForm = () => {
     defaultValues: {
       components: initialComponent,
       dimensions: initialDimensions,
+      property: initialProperty,
     },
   });
 
@@ -87,6 +108,15 @@ const ProductForm = () => {
   } = useFieldArray({
     control,
     name: "dimensions",
+  });
+
+  const {
+    fields: propertyFields,
+    append: appendProperty,
+    remove: removeProperty,
+  } = useFieldArray({
+    control,
+    name: "property",
   });
 
   // Add new row function for components
@@ -118,6 +148,25 @@ const ProductForm = () => {
       font_color: "",
 
       values: [{ key: "", value: "" }],
+    });
+  };
+
+  const addPropertyRow = () => {
+    appendProperty({
+      property_id: "",
+      property_name: "",
+      property_type: "",
+      is_active: "",
+      is_player_config: "",
+      display_name: "",
+      link_id: [{ link_id: "" }],
+      variants: [
+        {
+          variant_id: "",
+          is_active: "",
+          is_default: "",
+        },
+      ],
     });
   };
 
@@ -501,6 +550,140 @@ const ProductForm = () => {
                               style={{ backgroundColor: PrimaryColor }}
                             >
                               Add
+                            </Button>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                ))}
+              </Box>
+            </CustomPaper>
+          </Box>
+
+          {/* Property Section */}
+          <Box mt={3}>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Property</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <CustomPaper variant="outlined">
+              <Box style={{ padding: "8px", width: "100%" }}>
+                {propertyFields.map((field, index) => (
+                  <Grid container spacing={1} key={field.id}>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`property.${index}.property_id`}
+                        label="Property Id"
+                        defaultValue={field.property_id}
+                        isRequired={true}
+                        {...register(`property.${index}.property_id`)}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`property.${index}.property_name`}
+                        label="Property Name"
+                        defaultValue={field.property_name}
+                        isRequired={true}
+                        {...register(`property.${index}.property_name`)}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`property.${index}.property_type`}
+                        label="Property Type"
+                        defaultValue={field.property_type}
+                        isRequired={true}
+                        {...register(`property.${index}.property_type`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`property.${index}.is_active`}
+                        label="Is Active"
+                        defaultValue={field.is_active}
+                        isRequired={true}
+                        {...register(`property.${index}.is_active`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`property.${index}.is_player_config`}
+                        label="Is Player Config"
+                        defaultValue={field.is_player_config}
+                        isRequired={true}
+                        {...register(`property.${index}.is_player_config`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`property.${index}.display_name`}
+                        label="Display Name"
+                        defaultValue={field.display_name}
+                        isRequired={true}
+                        {...register(`property.${index}.display_name`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Box
+                      style={{
+                        boxSizing: "border-box",
+                        width: "100%",
+                      }}
+                    >
+                      <PropertyForm
+                        control={control}
+                        productIndex={index}
+                        register={register}
+                        errors={errors}
+                        setValue={setValue}
+                        useFieldArray={useFieldArray}
+                      />
+                    </Box>
+
+                    {/* Add/Remove Buttons aligned to the right */}
+                    <Grid item xs={12}>
+                      <Grid container justifyContent="flex-end" spacing={2}>
+                        {/* Remove Button - Only show if there's more than one row */}
+                        {propertyFields.length !== 1 && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              size="small"
+                              onClick={() => removeProperty(index)}
+                              style={{
+                                backgroundColor: DeleteColor,
+                                color: TextColor,
+                              }}
+                            >
+                              Remove Property
+                            </Button>
+                          </Grid>
+                        )}
+
+                        {/* Add Button only on the last row */}
+                        {propertyFields.length - 1 === index && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="contained"
+                              onClick={addPropertyRow}
+                              size="small"
+                              style={{ backgroundColor: PrimaryColor }}
+                            >
+                              Add Property
                             </Button>
                           </Grid>
                         )}
