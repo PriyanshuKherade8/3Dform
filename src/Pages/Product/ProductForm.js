@@ -53,8 +53,7 @@ const ProductForm = () => {
       background_color: "",
       font_type: "",
       font_color: "",
-      values: { x: "", y: "", z: "" },
-      // values: [{ key: "", value: "" }],
+      values: [{ key: "", value: "" }],
     },
   ];
 
@@ -66,7 +65,7 @@ const ProductForm = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      components: initialComponent, // Set initial component value here
+      components: initialComponent,
       dimensions: initialDimensions,
     },
   });
@@ -117,13 +116,35 @@ const ProductForm = () => {
       background_color: "",
       font_type: "",
       font_color: "",
-      values: { x: "", y: "", z: "" },
-      // values: [{ key: "", value: "" }],
+
+      values: [{ key: "", value: "" }],
     });
   };
 
   const onSubmit = (data) => {
     console.log("productdata", data);
+
+    const { dimensions, ...restOfData } = data;
+
+    const transformedDimensions = dimensions.map((dim) => ({
+      ...dim,
+      is_line: dim.is_line === "true",
+      is_border: dim.is_border === "true",
+      is_background: dim.is_background === "true",
+      values: dim.values.map((v) => ({
+        key: v.key,
+        value: v.value,
+      })),
+    }));
+
+    const addPayload = {
+      product_item: {
+        ...restOfData,
+        dimensions: transformedDimensions,
+      },
+    };
+
+    console.log("addPayload32152", addPayload);
   };
 
   return (
@@ -438,14 +459,15 @@ const ProductForm = () => {
                       />
                     </Grid>
 
-                    {/* <Box mt={2}>
+                    <Box mt={2}>
                       <CustomValuesForm
+                        index={index}
                         control={control}
                         productIndex={index}
                         register={register}
                         errors={errors}
                       />
-                    </Box> */}
+                    </Box>
 
                     {/* Add/Remove Buttons aligned to the right */}
                     <Grid item xs={12}>
@@ -507,123 +529,98 @@ const ProductForm = () => {
   );
 };
 
-// const CustomValuesForm = ({ control, productIndex, register, errors }) => {
-//   // Field array for dynamic custom_values
-//   const {
-//     fields: customValuesFields,
-//     append: appendCustomValue,
-//     remove: removeCustomValue,
-//   } = useFieldArray({
-//     control,
-//     name: `dimensions.${productIndex}.values`,
-//     defaultValues: [{ values: { x: "", y: "", z: "" } }],
-//   });
+const CustomValuesForm = ({ index, control, register, errors }) => {
+  const {
+    fields: customValuesFields,
+    append: appendCustomValue,
+    remove: removeCustomValue,
+  } = useFieldArray({
+    control,
+    name: `dimensions.${index}.values`,
+  });
 
-//   // Function to add a new custom value row
-//   const addCustomValueRow = () => {
-//     appendCustomValue({
-//       values: { x: "", y: "", z: "" },
-//     });
-//   };
-//   console.log("524151", customValuesFields, productIndex);
-//   return (
-//     <Box mt={3}>
-//       <CustomPaper variant="outlined">
-//         <CustomTypographyForTitle>
-//           <Typography
-//             variant="subtitle2"
-//             style={{ fontWeight: "550", fontSize: "16px" }}
-//           >
-//             Custom Values
-//           </Typography>
-//         </CustomTypographyForTitle>
-//       </CustomPaper>
-//       <TableContainer component={Paper} variant="outlined">
-//         <Table>
-//           <TableBody>
-//             {/* Table Header */}
-//             <TableRow>
-//               <TableCell>X</TableCell>
-//               <TableCell>Y</TableCell>
-//               <TableCell>Z</TableCell>
-//               <TableCell>{/* Action Buttons */}</TableCell>
-//             </TableRow>
+  const addCustomValueRow = () => {
+    appendCustomValue({ key: "", value: "" });
+  };
 
-//             {customValuesFields.map((customValueField, customValueIndex) => (
-//               <TableRow key={customValueField.id}>
-//                 <TableCell>
-//                   <TextField
-//                     // label="X"
-//                     defaultValue={customValueField.values.x}
-//                     {...register(
-//                       `dimensions.${productIndex}.values.${customValueIndex}.values.x`
-//                     )}
-//                     errors={errors}
-//                   />
-//                 </TableCell>
-//                 <TableCell>
-//                   <TextField
-//                     // label="Y"
-//                     defaultValue={customValueField.values.y}
-//                     {...register(
-//                       `dimensions.${productIndex}.values.${customValueIndex}.values.y`
-//                     )}
-//                     errors={errors}
-//                   />
-//                 </TableCell>
-//                 <TableCell>
-//                   <TextField
-//                     // label="Z"
-//                     defaultValue={customValueField.values.z}
-//                     {...register(
-//                       `dimensions.${productIndex}.values.${customValueIndex}.values.z`
-//                     )}
-//                     errors={errors}
-//                   />
-//                 </TableCell>
+  return (
+    <Box>
+      <CustomPaper variant="outlined">
+        <Typography variant="h6">Custom Values</Typography>
+      </CustomPaper>
+      <TableContainer component={Paper} variant="outlined">
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>Key</TableCell>
+              <TableCell>Value</TableCell>
+              <TableCell>{/* Action Buttons */}</TableCell>
+            </TableRow>
 
-//                 {/* Add/Remove buttons for custom values */}
-//                 <TableCell>
-//                   <Grid container justifyContent="flex-end" spacing={2}>
-//                     {customValuesFields.length > 1 && (
-//                       <Grid item>
-//                         <Button
-//                           variant="outlined"
-//                           style={{
-//                             backgroundColor: DeleteColor,
-//                             color: TextColor,
-//                           }}
-//                           size="small"
-//                           onClick={() => removeCustomValue(customValueIndex)}
-//                         >
-//                           Remove
-//                         </Button>
-//                       </Grid>
-//                     )}
-//                     {customValueIndex === customValuesFields.length - 1 && (
-//                       <Grid item>
-//                         <Button
-//                           variant="contained"
-//                           size="small"
-//                           onClick={addCustomValueRow}
-//                           style={{
-//                             backgroundColor: PrimaryColor,
-//                             color: TextColor,
-//                           }}
-//                         >
-//                           Add
-//                         </Button>
-//                       </Grid>
-//                     )}
-//                   </Grid>
-//                 </TableCell>
-//               </TableRow>
-//             ))}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
-//     </Box>
-//   );
-// };
+            {customValuesFields.map((field, fieldIndex) => (
+              <TableRow key={field.id}>
+                <TableCell>
+                  <TextField
+                    id={`dimensions.${index}.values.${fieldIndex}.key`}
+                    defaultValue={field.key}
+                    isRequired={true}
+                    {...register(
+                      `dimensions.${index}.values.${fieldIndex}.key`
+                    )}
+                    errors={errors}
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    id={`dimensions.${index}.values.${fieldIndex}.value`}
+                    defaultValue={field.value}
+                    isRequired={true}
+                    {...register(
+                      `dimensions.${index}.values.${fieldIndex}.value`
+                    )}
+                    errors={errors}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Grid container justifyContent="flex-end" spacing={1}>
+                    {customValuesFields.length > 1 && (
+                      <Grid item>
+                        <Button
+                          type="button"
+                          variant="outlined"
+                          size="small"
+                          onClick={() => removeCustomValue(fieldIndex)}
+                          style={{
+                            backgroundColor: DeleteColor,
+                            color: TextColor,
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </Grid>
+                    )}
+                    {customValuesFields.length - 1 === fieldIndex && (
+                      <Grid item>
+                        <Button
+                          type="button"
+                          variant="contained"
+                          onClick={addCustomValueRow}
+                          style={{ backgroundColor: PrimaryColor }}
+                          size="small"
+                        >
+                          Add
+                        </Button>
+                      </Grid>
+                    )}
+                  </Grid>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+};
 
 export default ProductForm;
