@@ -23,6 +23,7 @@ import { PrimaryColor } from "../../Styles/GlobalStyles/GlobalStyles";
 import ModelTrainingIcon from "@mui/icons-material/ModelTraining";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 // Drawer width
 const drawerWidth = 240;
 
@@ -227,6 +228,35 @@ export default function MiniDrawer() {
                 </Inventory2Icon>
                 <ListItemText
                   primary="Variant list"
+                  sx={[
+                    drawerOpen
+                      ? { opacity: 1, color: "white" }
+                      : { opacity: 0 },
+                  ]}
+                />
+              </ListItemButton>
+            </StyledLink>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <StyledLink to="/product-list">
+              <ListItemButton
+                sx={[
+                  { minHeight: 48, px: 2.5 },
+                  drawerOpen
+                    ? { justifyContent: "initial" }
+                    : { justifyContent: "center" },
+                ]}
+              >
+                <FormatListBulletedIcon
+                  sx={[
+                    { minWidth: 0, justifyContent: "center" },
+                    drawerOpen ? { mr: 3 } : { mr: "auto" },
+                  ]}
+                >
+                  <MailIcon sx={{ color: "white" }} />
+                </FormatListBulletedIcon>
+                <ListItemText
+                  primary="Product list"
                   sx={[
                     drawerOpen
                       ? { opacity: 1, color: "white" }

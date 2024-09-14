@@ -12,6 +12,8 @@ import Experience from "./Pages/Experience/Experience.js";
 import ExperienceForm from "./Pages/Experience/ExperienceForm.js";
 import VariantList from "./Pages/Variant/VariantList.js";
 import VariantForm from "./Pages/Variant/VariantForm.js";
+import ProductList from "./Pages/Product/ProductList.js";
+import ProductForm from "./Pages/Product/ProductForm.js";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +55,18 @@ const router = createBrowserRouter([
       {
         path: "/edit-variant/:id",
         element: <VariantForm />,
+      },
+      {
+        path: "/product-list",
+        element: <ProductList />,
+      },
+      {
+        path: "/add-product",
+        element: <ProductForm />,
+      },
+      {
+        path: "/edit-product/:id",
+        element: <ProductForm />,
       },
     ],
   },
