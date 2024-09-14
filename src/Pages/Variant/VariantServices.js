@@ -38,3 +38,38 @@ export const useAddVariantData = () => {
 
   return { mutate, isLoading, data, error };
 };
+
+export const useGetVariantDataById = (id) => {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["variant_data_by_id"],
+    queryFn: () => httpClient.get(`/get_variant/${id}`),
+    enabled: !!id,
+  });
+  return { data, error, isLoading };
+};
+
+export const useUpdateVariantData = () => {
+  const navigate = useNavigate();
+  const { mutate, isLoading, data, error } = useMutation({
+    mutationFn: async (payload) => {
+      const response = await httpClient.post("/modify_variant", payload);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data?.message) {
+        Swal.fire({
+          icon: "success",
+          title: "Variant data updated successfully",
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result?.isConfirmed) {
+            navigate(`/variant-list`);
+          }
+        });
+      }
+      queryClient.invalidateQueries(["variant_list"]);
+    },
+  });
+
+  return { mutate, isLoading, data, error };
+};

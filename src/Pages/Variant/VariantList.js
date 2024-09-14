@@ -27,7 +27,7 @@ const VariantList = () => {
   );
 
   const handleEdit = (row) => {
-    navigate(`/edit-variant/${row.model_id}`);
+    navigate(`/edit-variant/${row.variant_id}`);
   };
 
   const handleDelete = (row) => {

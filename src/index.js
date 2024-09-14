@@ -50,6 +50,10 @@ const router = createBrowserRouter([
         path: "/add-variant",
         element: <VariantForm />,
       },
+      {
+        path: "/edit-variant/:id",
+        element: <VariantForm />,
+      },
     ],
   },
 ]);

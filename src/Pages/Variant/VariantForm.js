@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React from "react";
+import React, { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as yup from "yup";
 import {
@@ -25,7 +25,11 @@ import {
   Typography,
 } from "@mui/material";
 import TextField from "../../Components/TextField/TextField";
-import { useAddVariantData } from "./VariantServices";
+import {
+  useAddVariantData,
+  useGetVariantDataById,
+  useUpdateVariantData,
+} from "./VariantServices";
 
 const schema = yup.object().shape({});
 const initialVariantIcons = [
@@ -63,13 +67,44 @@ const VariantForm = () => {
   };
 
   const { mutate: addVariant } = useAddVariantData();
+  const { data: variantData } = useGetVariantDataById(id);
+  const { mutate: updateVariant } = useUpdateVariantData();
+  console.log("kvk", variantData?.data?.variant);
+  const variantDataToSet = variantData?.data?.variant;
 
   const onSubmit = (data) => {
     console.log("variantdata", data);
     const addPayload = { variant_item: { ...data } };
-    console.log("addPayloadv", addPayload);
-    addVariant(addPayload);
+    const updatePayload = {
+      variant_id: id,
+      item: {
+        ...data,
+      },
+    };
+    console.log("addPayloadv", updatePayload);
+    !!id ? updateVariant(updatePayload) : addVariant(addPayload);
   };
+
+  useEffect(() => {
+    if (!!id && !!variantData) {
+      setValue("user_id", variantDataToSet?.user_id);
+      setValue("project_id", variantDataToSet?.project_id);
+      setValue("variant_type", variantDataToSet?.variant_type);
+      setValue("variant_file_path", variantDataToSet?.variant_file_path);
+      setValue("variant_value", variantDataToSet?.variant_value);
+      setValue("variant_name", variantDataToSet?.variant_name);
+
+      if (variantDataToSet?.variant_icons?.length > 0) {
+        setValue("variant_icons", variantDataToSet.variant_icons);
+
+        variantDataToSet.variant_icons.forEach((icon, index) => {
+          setValue(`variant_icons.${index}.file_type`, icon.file_type);
+          setValue(`variant_icons.${index}.path`, icon.path);
+        });
+      }
+    }
+  }, [variantData, id]);
+
   return (
     <CustomLayout>
       <CustomPaper variant="outlined">
@@ -87,7 +122,7 @@ const VariantForm = () => {
       <CustomPaper variant="outlined">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={1}>
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="variant_id"
                 placeholder="Enter variant ID"
@@ -96,7 +131,7 @@ const VariantForm = () => {
                 {...register("variant_id")}
                 errors={errors}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={3}>
               <TextField
                 id="user_id"
@@ -165,7 +200,7 @@ const VariantForm = () => {
             {/* Dynamic Link Fields */}
             <Box style={{ padding: "16px", width: "92%" }}>
               <Typography variant="h6" style={{ marginBottom: "16px" }}>
-                Links
+                Variant Icons
               </Typography>
               <TableContainer component={Paper} variant="outlined">
                 <Table>
