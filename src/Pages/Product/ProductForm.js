@@ -24,13 +24,19 @@ import {
 import { useFieldArray, useForm } from "react-hook-form";
 import TextField from "../../Components/TextField/TextField";
 import { PropertyForm } from "./PropertyForm";
-import { useAddProductData } from "./ProductServices";
+import {
+  useAddProductData,
+  useGetProductDataById,
+  useUpdateProductData,
+} from "./ProductServices";
 import { useGetModelListData } from "../ModelPage/ModelServices";
 import Dropdown from "../../Components/Dropdown/Dropdown";
 import { useGetVariantListData } from "../Variant/VariantServices";
 
 const ProductForm = () => {
   const { id } = useParams();
+  const { data: productData } = useGetProductDataById(id);
+  console.log("productData", productData);
   const { data: modelData, error, isLoading } = useGetModelListData();
 
   const modelList = modelData?.data?.modelList?.map((item) => {
@@ -195,6 +201,7 @@ const ProductForm = () => {
   };
 
   const { mutate: addProduct } = useAddProductData();
+  const { mutate: updateProduct } = useUpdateProductData();
   const onSubmit = (data) => {
     const { dimensions, property, components, ...restOfData } = data;
 
@@ -234,8 +241,18 @@ const ProductForm = () => {
       },
     };
 
+    const updatePayload = {
+      product_id: id,
+      item: {
+        ...restOfData,
+        dimensions: transformedDimensions,
+        property: transformedProperties,
+        components: transformedComponents,
+      },
+    };
+
     console.log("payloadProduct", addPayload);
-    addProduct(addPayload);
+    !!id ? updateProduct(updatePayload) : addProduct(addPayload);
   };
 
   return (

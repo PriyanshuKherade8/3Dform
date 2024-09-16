@@ -38,3 +38,38 @@ export const useAddProductData = () => {
 
   return { mutate, isLoading, data, error };
 };
+
+export const useGetProductDataById = (id) => {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["product_data_by_id"],
+    queryFn: () => httpClient.get(`/get_product/${id}`),
+    enabled: !!id,
+  });
+  return { data, error, isLoading };
+};
+
+export const useUpdateProductData = () => {
+  const navigate = useNavigate();
+  const { mutate, isLoading, data, error } = useMutation({
+    mutationFn: async (payload) => {
+      const response = await httpClient.post("/modify_product", payload);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data?.message) {
+        Swal.fire({
+          icon: "success",
+          title: "Product data updated successfully",
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result?.isConfirmed) {
+            navigate(`/product-list`);
+          }
+        });
+      }
+      queryClient.invalidateQueries(["product_list"]);
+    },
+  });
+
+  return { mutate, isLoading, data, error };
+};
