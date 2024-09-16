@@ -32,6 +32,7 @@ import {
 import { useGetModelListData } from "../ModelPage/ModelServices";
 import Dropdown from "../../Components/Dropdown/Dropdown";
 import { useGetVariantListData } from "../Variant/VariantServices";
+import { generateUUID } from "../ModelPage/ModelForm";
 
 const ProductForm = () => {
   const { id } = useParams();
@@ -67,7 +68,8 @@ const ProductForm = () => {
   const initialDimensions = [
     {
       dimension_id: "",
-      link_id: "",
+      // link_id: "",
+      link_id: !!id ? "" : generateUUID(),
       object_link_id: "",
       is_line: "",
       line_color: "",
@@ -502,6 +504,7 @@ const ProductForm = () => {
                         isRequired={true}
                         {...register(`dimensions.${index}.link_id`)}
                         errors={errors}
+                        readOnly={true}
                       />
                     </Grid>
                     <Grid item xs={12} md={3}>
