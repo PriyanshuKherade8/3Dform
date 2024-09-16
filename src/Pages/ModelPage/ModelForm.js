@@ -45,7 +45,7 @@ const generateUUID = () => {
 
 // Validation schema using Yup
 const schema = yup.object().shape({
-  model_id: yup.string().required("Model ID is required"),
+  // model_id: yup.string().required("Model ID is required"),
   model_name: yup.string().required("Model Name is required"),
   model_path: yup.string().required("Model Path is required"),
   user_id: yup.mixed().required("User id is required"),
@@ -87,7 +87,7 @@ const ModelForm = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      model_id: "",
+      // model_id: "",
       model_name: "",
       model_path: "",
       links: initialLinks,
@@ -159,7 +159,7 @@ const ModelForm = () => {
   useEffect(() => {
     if (!!id && !!modelData) {
       // Set the simple fields
-      setValue("model_id", modelData?.model?.model_id);
+      // setValue("model_id", modelData?.model?.model_id);
       setValue("model_name", modelData?.model?.model_name);
       setValue("model_path", modelData?.model?.model_path);
       setValue("project_id", {
@@ -201,7 +201,7 @@ const ModelForm = () => {
       <CustomPaper variant="outlined">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={1}>
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <TextField
                 id="model_id"
                 placeholder="Enter Model ID"
@@ -210,8 +210,9 @@ const ModelForm = () => {
                 {...register("model_id")}
                 errors={errors}
               />
-            </Grid>
-            <Grid item xs={12} md={3}>
+            </Grid> */}
+
+            <Grid item xs={12} md={4}>
               <TextField
                 id="model_name"
                 placeholder="Enter Model Name"
@@ -221,7 +222,7 @@ const ModelForm = () => {
                 errors={errors}
               />
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <Dropdown
                 maxMenuHeight={200}
                 id="user_id"
@@ -229,15 +230,12 @@ const ModelForm = () => {
                 label="User ID"
                 isRequired={true}
                 control={control}
-                selectObj={[
-                  { label: "xyz", value: "1" },
-                  { label: "abc", value: "2" },
-                ]}
+                selectObj={[{ label: "USR1000000001", value: "USR1000000001" }]}
                 errors={errors}
                 onInput={true}
               />
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <Dropdown
                 maxMenuHeight={200}
                 id="project_id"
@@ -245,10 +243,7 @@ const ModelForm = () => {
                 label="Project ID"
                 isRequired={true}
                 control={control}
-                selectObj={[
-                  { label: "xyz", value: "1" },
-                  { label: "abc", value: "2" },
-                ]}
+                selectObj={[{ label: "PRJ1000000001", value: "PRJ1000000001" }]}
                 errors={errors}
                 onInput={true}
               />
