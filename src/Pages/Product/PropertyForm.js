@@ -8,8 +8,18 @@ import {
 } from "../../Styles/GlobalStyles/GlobalStyles";
 import TextField from "../../Components/TextField/TextField";
 import { useFieldArray, useForm } from "react-hook-form";
+import Dropdown from "../../Components/Dropdown/Dropdown";
+import { useGetVariantListData } from "../Variant/VariantServices";
 
 export const PropertyForm = ({ productIndex, control, errors, register }) => {
+  const { data: variantData } = useGetVariantListData();
+  const variantList = variantData?.data?.variantList?.map((item) => {
+    return {
+      label: item?.variant_name,
+      value: item?.id,
+    };
+  });
+
   const {
     fields: linkIdFields,
     append: appendLinkId,
@@ -112,13 +122,24 @@ export const PropertyForm = ({ productIndex, control, errors, register }) => {
       {propertyFieldsList.map((propertyField, propertyIndex) => (
         <Grid container spacing={2} key={propertyField.id}>
           <Grid item xs={12} md={3}>
-            <TextField
+            {/* <TextField
               label="Variant Id"
               {...register(
                 `property.${productIndex}.variants.${propertyIndex}.variant_id`
               )}
               errors={errors}
               fullWidth
+            /> */}
+            <Dropdown
+              label={"Variant Id"}
+              maxMenuHeight={200}
+              id={`property.${productIndex}.variants.${propertyIndex}.variant_id`}
+              placeholder="Select"
+              isRequired={true}
+              control={control}
+              selectObj={variantList}
+              errors={errors}
+              onInput={true}
             />
           </Grid>
           <Grid item xs={12} md={3}>
@@ -161,7 +182,7 @@ export const PropertyForm = ({ productIndex, control, errors, register }) => {
                     }}
                     onClick={() => removeProperty(propertyIndex)}
                   >
-                    Remove Property
+                    Remove Variants
                   </Button>
                 </Grid>
               )}
@@ -175,7 +196,7 @@ export const PropertyForm = ({ productIndex, control, errors, register }) => {
                       color: TextColor,
                     }}
                   >
-                    Add Property
+                    Add Variants
                   </Button>
                 </Grid>
               )}

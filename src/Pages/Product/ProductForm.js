@@ -24,15 +24,37 @@ import {
 import { useFieldArray, useForm } from "react-hook-form";
 import TextField from "../../Components/TextField/TextField";
 import { PropertyForm } from "./PropertyForm";
+import { useAddProductData } from "./ProductServices";
+import { useGetModelListData } from "../ModelPage/ModelServices";
+import Dropdown from "../../Components/Dropdown/Dropdown";
+import { useGetVariantListData } from "../Variant/VariantServices";
 
 const ProductForm = () => {
   const { id } = useParams();
+  const { data: modelData, error, isLoading } = useGetModelListData();
+
+  const modelList = modelData?.data?.modelList?.map((item) => {
+    return {
+      label: item?.model_name,
+      value: item?.id,
+    };
+  });
+
+  const { data: variantData } = useGetVariantListData();
+  const variantList = variantData?.data?.variantList?.map((item) => {
+    return {
+      label: item?.variant_name,
+      value: item?.id,
+    };
+  });
 
   const initialComponent = [
     {
       component_id: "",
       model: "",
       link_id: "",
+      default_settings: [],
+      default_variants: [],
     },
   ];
 
@@ -125,6 +147,8 @@ const ProductForm = () => {
       component_id: "",
       model: "",
       link_id: "",
+      default_settings: [],
+      default_variants: [],
     });
   };
 
@@ -170,10 +194,9 @@ const ProductForm = () => {
     });
   };
 
+  const { mutate: addProduct } = useAddProductData();
   const onSubmit = (data) => {
-    console.log("productdata", data);
-
-    const { dimensions, ...restOfData } = data;
+    const { dimensions, property, components, ...restOfData } = data;
 
     const transformedDimensions = dimensions.map((dim) => ({
       ...dim,
@@ -186,14 +209,33 @@ const ProductForm = () => {
       })),
     }));
 
+    // Transform components so that model only contains the id
+    const transformedComponents = components?.map((component) => ({
+      ...component,
+      model: component.model.id,
+    }));
+
+    // Transform the property link_id to only contain values
+    const transformedProperties = property.map((prop) => ({
+      ...prop,
+      link_id: prop.link_id.map((link) => link),
+      variants: prop.variants.map((variant) => ({
+        ...variant,
+        variant_id: variant.variant_id.value,
+      })),
+    }));
+
     const addPayload = {
       product_item: {
         ...restOfData,
         dimensions: transformedDimensions,
+        property: transformedProperties,
+        components: transformedComponents,
       },
     };
 
-    console.log("addPayload32152", addPayload);
+    console.log("payloadProduct", addPayload);
+    addProduct(addPayload);
   };
 
   return (
@@ -265,14 +307,24 @@ const ProductForm = () => {
                           {...register(`components.${index}.component_id`)}
                           defaultValue={field.component_id}
                           errors={errors}
+                          label={""}
                         />
                       </TableCell>
                       <TableCell>
-                        <TextField
+                        {/* <TextField
                           id={`components.${index}.model`}
                           {...register(`components.${index}.model`)}
                           defaultValue={field.model}
                           errors={errors}
+                        /> */}
+
+                        <Dropdown
+                          id={`components.${index}.model`}
+                          placeholder="Select"
+                          control={control}
+                          selectObj={modelList}
+                          errors={errors}
+                          onInput={true}
                         />
                       </TableCell>
                       <TableCell>
@@ -655,7 +707,6 @@ const ProductForm = () => {
                     {/* Add/Remove Buttons aligned to the right */}
                     <Grid item xs={12}>
                       <Grid container justifyContent="flex-end" spacing={2}>
-                        {/* Remove Button - Only show if there's more than one row */}
                         {propertyFields.length !== 1 && (
                           <Grid item>
                             <Button
@@ -673,7 +724,6 @@ const ProductForm = () => {
                           </Grid>
                         )}
 
-                        {/* Add Button only on the last row */}
                         {propertyFields.length - 1 === index && (
                           <Grid item>
                             <Button
