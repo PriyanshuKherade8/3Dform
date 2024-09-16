@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   CustomLayout,
   CustomPaper,
@@ -219,7 +219,7 @@ const ProductForm = () => {
     // Transform components so that model only contains the id
     const transformedComponents = components?.map((component) => ({
       ...component,
-      model: component.model.id,
+      model: component.model.value,
     }));
 
     // Transform the property link_id to only contain values
@@ -254,7 +254,88 @@ const ProductForm = () => {
     console.log("payloadProduct", addPayload);
     !!id ? updateProduct(updatePayload) : addProduct(addPayload);
   };
+  const productDataToSet = productData?.data?.product;
 
+  useEffect(() => {
+    if (!!id && productData) {
+      setValue("product_name", productDataToSet?.product_name);
+      setValue("user_id", productDataToSet?.user_id);
+      setValue("project_id", productDataToSet?.project_id);
+    }
+  }, [id, productData]);
+
+  useEffect(() => {
+    if (productDataToSet?.components?.length > 0 && !!id) {
+      removeComponent();
+      productDataToSet?.components?.map((component) => {
+        console.log("component", component);
+        appendComponent({
+          component_id: component.component_id || "",
+          model: { label: component.model, value: component.model },
+          link_id: component.link_id || "",
+          default_settings: component.default_settings || [],
+          default_variants: component.default_variants || [],
+        });
+      });
+    }
+  }, [productDataToSet?.components, id]);
+
+  // Dimension Set value
+  useEffect(() => {
+    if (productDataToSet?.dimensions?.length > 0 && !!id) {
+      removeDimensions();
+
+      productDataToSet?.dimensions?.forEach((dimension) => {
+        console.log("dimension", dimension);
+        appendDimensions({
+          dimension_id: dimension.dimension_id || "",
+          link_id: dimension.link_id || "",
+          object_link_id: dimension.object_link_id || "",
+          is_line: dimension.is_line === true ? true : false,
+          line_color: dimension.line_color || "",
+          line_scale: dimension.line_scale || "",
+          line_offset: dimension.line_offset || "",
+          width: dimension.width || "",
+          height: dimension.height || "",
+          is_border: dimension.is_border === true ? true : false,
+          border_width: dimension.border_width || "",
+          border_color: dimension.border_color || "",
+          is_background: dimension.is_background === true ? true : false,
+          background_color: dimension.background_color || "",
+          font_type: dimension.font_type || "",
+          font_color: dimension.font_color || "",
+          values: dimension.values.map((value) => ({
+            key: value.key || "",
+            value: value.value || "",
+          })) || [{ key: "", value: "" }],
+        });
+      });
+    }
+  }, [productDataToSet?.dimensions, id]);
+
+  useEffect(() => {
+    if (productDataToSet?.property?.length > 0 && !!id) {
+      removeProperty();
+      productDataToSet?.property?.map((component) => {
+        appendProperty({
+          property_id: "",
+          property_name: "",
+          property_type: "",
+          is_active: "",
+          is_player_config: "",
+          display_name: "",
+          link_id: [{ link_id: "" }],
+          variants: [
+            {
+              variant_id: "",
+              is_active: "",
+              is_default: "",
+            },
+          ],
+        });
+      });
+    }
+  }, [productDataToSet?.property, id]);
   return (
     <CustomLayout>
       <CustomPaper variant="outlined">
@@ -718,6 +799,8 @@ const ProductForm = () => {
                         errors={errors}
                         setValue={setValue}
                         useFieldArray={useFieldArray}
+                        productDataToSet={productDataToSet}
+                        id={id}
                       />
                     </Box>
 

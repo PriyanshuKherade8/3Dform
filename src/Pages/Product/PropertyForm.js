@@ -10,8 +10,17 @@ import TextField from "../../Components/TextField/TextField";
 import { useFieldArray, useForm } from "react-hook-form";
 import Dropdown from "../../Components/Dropdown/Dropdown";
 import { useGetVariantListData } from "../Variant/VariantServices";
+import { useEffect } from "react";
 
-export const PropertyForm = ({ productIndex, control, errors, register }) => {
+export const PropertyForm = ({
+  productIndex,
+  control,
+  errors,
+  register,
+  setValue,
+  productDataToSet,
+  id,
+}) => {
   const { data: variantData } = useGetVariantListData();
   const variantList = variantData?.data?.variantList?.map((item) => {
     return {
@@ -53,6 +62,58 @@ export const PropertyForm = ({ productIndex, control, errors, register }) => {
       is_default: "",
     });
   };
+
+  useEffect(() => {
+    if (
+      productDataToSet?.property &&
+      productDataToSet?.property.length > 0 &&
+      !!id
+    ) {
+      productDataToSet?.property?.forEach((property, index) => {
+        // Set value for property fields
+        setValue(`property.${index}.property_id`, property.property_id);
+        setValue(`property.${index}.property_name`, property.property_name);
+        setValue(`property.${index}.property_type`, property.property_type);
+        setValue(`property.${index}.is_active`, property.is_active);
+        setValue(
+          `property.${index}.is_player_config`,
+          property.is_player_config
+        );
+        setValue(`property.${index}.display_name`, property.display_name);
+
+        // Handle link_id array
+        if (property.link_id && property.link_id.length > 0) {
+          property.link_id.forEach((link, linkIndex) => {
+            if (linkIndex === 0) {
+              setValue(`property.${index}.link_id`, property.link_id);
+            }
+          });
+        }
+
+        // Handle variants array
+        if (property.variants && property.variants.length > 0) {
+          property.variants.forEach((variant, variantIndex) => {
+            console.log("variant111", variant);
+            const transformedVariant = {
+              ...variant,
+              variant_id: {
+                label: variant.variant_id, // Assuming variant.model contains the correct label
+                value: variant.variant_id,
+              },
+            };
+
+            if (variantIndex === 0) {
+              // For the first variant, set the value directly
+              setValue(`property.${index}.variants`, [transformedVariant]);
+            } else {
+              // For subsequent variants, append them
+              appendProperty(transformedVariant);
+            }
+          });
+        }
+      });
+    }
+  }, [productDataToSet, appendLinkId, appendProperty, id, setValue]);
 
   const LinkIdFields = () => (
     <>
