@@ -24,6 +24,7 @@ import ModelTrainingIcon from "@mui/icons-material/ModelTraining";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import BackupIcon from "@mui/icons-material/Backup";
 // Drawer width
 const drawerWidth = 240;
 
@@ -257,6 +258,35 @@ export default function MiniDrawer() {
                 </FormatListBulletedIcon>
                 <ListItemText
                   primary="Product list"
+                  sx={[
+                    drawerOpen
+                      ? { opacity: 1, color: "white" }
+                      : { opacity: 0 },
+                  ]}
+                />
+              </ListItemButton>
+            </StyledLink>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <StyledLink to="/file-upload">
+              <ListItemButton
+                sx={[
+                  { minHeight: 48, px: 2.5 },
+                  drawerOpen
+                    ? { justifyContent: "initial" }
+                    : { justifyContent: "center" },
+                ]}
+              >
+                <BackupIcon
+                  sx={[
+                    { minWidth: 0, justifyContent: "center" },
+                    drawerOpen ? { mr: 3 } : { mr: "auto" },
+                  ]}
+                >
+                  <MailIcon sx={{ color: "white" }} />
+                </BackupIcon>
+                <ListItemText
+                  primary="File Upload"
                   sx={[
                     drawerOpen
                       ? { opacity: 1, color: "white" }

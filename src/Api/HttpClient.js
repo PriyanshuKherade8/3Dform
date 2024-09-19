@@ -8,3 +8,17 @@ const httpClient = axios.create({
 });
 
 export default httpClient;
+
+export const httpApi = axios.create({
+  baseURL: "http://143.110.177.32/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export const httpApiMultipart = axios.create({
+  baseURL: "http://143.110.177.32/api",
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+});

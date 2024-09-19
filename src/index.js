@@ -14,6 +14,7 @@ import VariantList from "./Pages/Variant/VariantList.js";
 import VariantForm from "./Pages/Variant/VariantForm.js";
 import ProductList from "./Pages/Product/ProductList.js";
 import ProductForm from "./Pages/Product/ProductForm.js";
+import FileUpload from "./Pages/FileUpload/FileUpload.js";
 
 const router = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
       {
         path: "/edit-product/:id",
         element: <ProductForm />,
+      },
+      {
+        path: "/file-upload",
+        element: <FileUpload />,
       },
     ],
   },
