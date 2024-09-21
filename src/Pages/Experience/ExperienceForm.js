@@ -253,12 +253,18 @@ const ExperienceForm = () => {
     },
   });
 
-  const { data: environmentListData } = useGetEnviromentListData();
+  const userProjectInfo = {
+    selectedUser: user,
+    selectedUserProject: project,
+  };
+
+  const { data: environmentListData } =
+    useGetEnviromentListData(userProjectInfo);
 
   const { mutate: addExperience } = useAddExperience();
   const { mutate: updateExperience } = useUpdateExperienceData();
 
-  const { data: controlListData } = useGetControlListData();
+  const { data: controlListData } = useGetControlListData(userProjectInfo);
 
   const controlList = controlListData?.data?.controlList?.map((item) => {
     return {
@@ -267,7 +273,7 @@ const ExperienceForm = () => {
     };
   });
 
-  const { data: productListData } = useGetProductListData();
+  const { data: productListData } = useGetProductListData(userProjectInfo);
 
   const productList = productListData?.data?.productList?.map((item) => {
     return {

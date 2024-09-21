@@ -126,8 +126,8 @@ const ModelForm = () => {
       return {
         model_item: {
           ...data,
-          project_id: data?.project_id?.value,
-          user_id: data?.user_id?.value,
+          project_id: data?.project_id,
+          user_id: data?.user_id,
           links: data.links.map((link) => ({
             ...link,
             xid: link.xid.split(",").map((id) => id.trim()),
@@ -141,8 +141,8 @@ const ModelForm = () => {
         model_id: data?.model_id,
         item: {
           ...(({ model_id, ...rest }) => rest)(data),
-          project_id: data?.project_id?.value,
-          user_id: data?.user_id?.value,
+          project_id: data?.project_id,
+          user_id: data?.user_id,
           links: data.links.map((link) => ({
             ...link,
             xid: link.xid.split(",").map((id) => id.trim()),

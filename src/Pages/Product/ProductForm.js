@@ -41,8 +41,16 @@ const ProductForm = () => {
   const user = queryParams.get("user");
   const project = queryParams.get("project");
   const { data: productData } = useGetProductDataById(id);
+  const userProjectInfo = {
+    selectedUser: user,
+    selectedUserProject: project,
+  };
 
-  const { data: modelData, error, isLoading } = useGetModelListData();
+  const {
+    data: modelData,
+    error,
+    isLoading,
+  } = useGetModelListData(userProjectInfo);
 
   const modelList = modelData?.data?.modelList?.map((item) => {
     return {

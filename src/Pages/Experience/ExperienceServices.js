@@ -18,10 +18,15 @@ export const useGetExperienceListData = (userProjectInfo) => {
   return { data, error, isLoading };
 };
 
-export const useGetEnviromentListData = () => {
+export const useGetEnviromentListData = (userProjectInfo) => {
+  const { selectedUser, selectedUserProject } = userProjectInfo || {};
   const { data, error, isLoading } = useQuery({
-    queryKey: ["environment_list"],
-    queryFn: () => httpClient.get("/get_environment_list"),
+    queryKey: ["environment_list", selectedUser, selectedUserProject],
+    queryFn: () =>
+      httpClient.get(
+        `/get_environment_list?user=${selectedUser}&project=${selectedUserProject}`
+      ),
+    enabled: !!selectedUser && !!selectedUserProject,
   });
 
   return { data, error, isLoading };
@@ -53,19 +58,29 @@ export const useAddExperience = () => {
   return { mutate, isLoading, data, error };
 };
 
-export const useGetControlListData = () => {
+export const useGetControlListData = (userProjectInfo) => {
+  const { selectedUser, selectedUserProject } = userProjectInfo || {};
   const { data, error, isLoading } = useQuery({
-    queryKey: ["control_list"],
-    queryFn: () => httpClient.get("/get_control_list"),
+    queryKey: ["control_list", selectedUser, selectedUserProject],
+    queryFn: () =>
+      httpClient.get(
+        `/get_control_list?user=${selectedUser}&project=${selectedUserProject}`
+      ),
+    enabled: !!selectedUser && !!selectedUserProject,
   });
 
   return { data, error, isLoading };
 };
 
-export const useGetProductListData = () => {
+export const useGetProductListData = (userProjectInfo) => {
+  const { selectedUser, selectedUserProject } = userProjectInfo || {};
   const { data, error, isLoading } = useQuery({
-    queryKey: ["product_list"],
-    queryFn: () => httpClient.get("/get_product_list"),
+    queryKey: ["product_list", selectedUser, selectedUserProject],
+    queryFn: () =>
+      httpClient.get(
+        `/get_product_list?user=${selectedUser}&project=${selectedUserProject}`
+      ),
+    enabled: !!selectedUser && !!selectedUserProject,
   });
 
   return { data, error, isLoading };
