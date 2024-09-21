@@ -60,7 +60,7 @@ export const useGetModelListData = (userProjectInfo) => {
   const { selectedUser, selectedUserProject } = userProjectInfo || {};
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ["model_list", userProjectInfo],
+    queryKey: ["model_list", selectedUser, selectedUserProject],
     queryFn: () =>
       httpClient.get(
         `/get_model_list?user=${selectedUser}&project=${selectedUserProject}`

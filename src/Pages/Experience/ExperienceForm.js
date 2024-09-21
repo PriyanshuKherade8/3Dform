@@ -25,7 +25,7 @@ import Dropdown from "../../Components/Dropdown/Dropdown";
 import { useForm, useFieldArray } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   useAddExperience,
   useGetControlListData,
@@ -124,6 +124,10 @@ const schema = yup.object().shape({
 
 const ExperienceForm = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const user = queryParams.get("user");
+  const project = queryParams.get("project");
 
   const initialLinks = [
     {
@@ -291,6 +295,13 @@ const ExperienceForm = () => {
   const { data: experienceData } = useGetExperienceDataById(id);
   console.log("aaexperienceData", experienceData?.data?.experience);
   const allExperienceData = experienceData?.data?.experience;
+
+  useEffect(() => {
+    if (!!user && !!project) {
+      setValue("user_id", user);
+      setValue("project_id", project);
+    }
+  }, [user, project]);
 
   useEffect(() => {
     if (!!id && !!experienceData) {
@@ -1287,6 +1298,7 @@ const ExperienceForm = () => {
                 isRequired={true}
                 {...register("user_id")}
                 errors={errors}
+                readOnly={true}
               />
             </Grid>
             <Grid item xs={12} md={3}>
@@ -1297,6 +1309,7 @@ const ExperienceForm = () => {
                 isRequired={true}
                 {...register("project_id")}
                 errors={errors}
+                readOnly={true}
               />
             </Grid>
             {/* <Grid item xs={12} md={3}>

@@ -163,6 +163,7 @@ const ModelForm = () => {
       setValue("project_id", project);
     }
   }, [user, project]);
+
   useEffect(() => {
     if (!!id && !!modelData) {
       // Set the simple fields

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useGetExperienceListData } from "./ExperienceServices";
 import { useNavigate } from "react-router-dom";
-import { Button, IconButton } from "@mui/material";
+import { Button, CardContent, Grid, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import {
   MaterialReactTable,
@@ -12,10 +12,49 @@ import {
   CustomPaper,
   CustomTypographyForTitle,
 } from "../../Styles/GlobalStyles/GlobalStyles";
+import Dropdown from "../../Components/Dropdown/Dropdown";
+import { useForm } from "react-hook-form";
+import {
+  useGetProjectListData,
+  useGetUserListData,
+} from "../FileUpload/FileService";
 
 const Experience = () => {
   const navigate = useNavigate();
-  const { data: experienceData, error, isLoading } = useGetExperienceListData();
+  const {
+    register,
+    formState: { errors },
+    control,
+    watch,
+    handleSubmit,
+    reset,
+  } = useForm();
+
+  const { user, project } = watch();
+
+  const selectedUser = user?.value;
+  const selectedUserProject = project?.value;
+
+  const userProjectInfo = { selectedUser, selectedUserProject };
+
+  const { data: userData } = useGetUserListData();
+
+  const userList = userData?.data?.user_list?.map((item) => ({
+    label: item?.user_name,
+    value: item?.user_id,
+  }));
+
+  const { data: projectData } = useGetProjectListData(selectedUser);
+  const projectList = projectData?.data?.project_list?.map((item) => ({
+    label: item?.project_name,
+    value: item?.project_id,
+  }));
+
+  const {
+    data: experienceData,
+    error,
+    isLoading,
+  } = useGetExperienceListData(userProjectInfo);
   const data = useMemo(
     () =>
       experienceData?.data?.experienceList?.map(({ id, ...rest }) => rest) ||
@@ -25,6 +64,23 @@ const Experience = () => {
 
   const handleEdit = (row) => {
     navigate(`/edit-experience/${row.experience_id}`);
+  };
+
+  const handleAddNewExperience = () => {
+    if (selectedUser && selectedUserProject) {
+      const params = new URLSearchParams();
+      params.append("user", selectedUser);
+      params.append("project", selectedUserProject);
+
+      navigate({
+        pathname: "/add-experience",
+        search: `?${params.toString()}`,
+      });
+    } else {
+      alert(
+        "Please select both a User and a Project before adding a new experience."
+      );
+    }
   };
 
   const columns = useMemo(
@@ -67,7 +123,7 @@ const Experience = () => {
         variant="contained"
         color="primary"
         size="small"
-        onClick={() => navigate("/add-experience")}
+        onClick={handleAddNewExperience}
         sx={{
           marginLeft: "auto",
           backgroundColor: "#16325B",
@@ -88,6 +144,10 @@ const Experience = () => {
     },
   });
 
+  const onSubmit = (data) => {
+    console.log("data", data);
+  };
+
   return (
     <CustomLayout variant={"outlined"}>
       <CustomPaper variant="outlined">
@@ -100,6 +160,38 @@ const Experience = () => {
         >
           {"Experience List"}
         </CustomTypographyForTitle>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={3}>
+                <Dropdown
+                  maxMenuHeight={200}
+                  id="user"
+                  placeholder="Select"
+                  label="User"
+                  isRequired={true}
+                  control={control}
+                  selectObj={userList}
+                  errors={errors}
+                  onInput={true}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <Dropdown
+                  maxMenuHeight={200}
+                  id="project"
+                  placeholder="Select"
+                  label="Project"
+                  isRequired={true}
+                  control={control}
+                  selectObj={projectList}
+                  errors={errors}
+                  onInput={true}
+                />
+              </Grid>
+            </Grid>
+          </form>
+        </CardContent>
       </CustomPaper>
       <MaterialReactTable table={table} />
     </CustomLayout>

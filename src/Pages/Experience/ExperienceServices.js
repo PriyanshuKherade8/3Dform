@@ -4,10 +4,15 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import queryClient from "../../queryClient";
 
-export const useGetExperienceListData = () => {
+export const useGetExperienceListData = (userProjectInfo) => {
+  const { selectedUser, selectedUserProject } = userProjectInfo || {};
   const { data, error, isLoading } = useQuery({
-    queryKey: ["experience_list"],
-    queryFn: () => httpClient.get("/get_experience_list"),
+    queryKey: ["experience_list", selectedUser, selectedUserProject],
+    queryFn: () =>
+      httpClient.get(
+        `/get_experience_list?user=${selectedUser}&project=${selectedUserProject}`
+      ),
+    enabled: !!selectedUser && !!selectedUserProject,
   });
 
   return { data, error, isLoading };
