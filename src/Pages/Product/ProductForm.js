@@ -41,7 +41,7 @@ const ProductForm = () => {
   const user = queryParams.get("user");
   const project = queryParams.get("project");
   const { data: productData } = useGetProductDataById(id);
-  console.log("productData", productData);
+
   const { data: modelData, error, isLoading } = useGetModelListData();
 
   const modelList = modelData?.data?.modelList?.map((item) => {
@@ -257,7 +257,6 @@ const ProductForm = () => {
       },
     };
 
-    console.log("payloadProduct", addPayload);
     !!id ? updateProduct(updatePayload) : addProduct(addPayload);
   };
   const productDataToSet = productData?.data?.product;
@@ -281,7 +280,6 @@ const ProductForm = () => {
     if (productDataToSet?.components?.length > 0 && !!id) {
       removeComponent();
       productDataToSet?.components?.map((component) => {
-        console.log("component", component);
         appendComponent({
           component_id: component.component_id || "",
           model: { label: component.model, value: component.model },
@@ -299,7 +297,6 @@ const ProductForm = () => {
       removeDimensions();
 
       productDataToSet?.dimensions?.forEach((dimension) => {
-        console.log("dimension", dimension);
         appendDimensions({
           dimension_id: dimension.dimension_id || "",
           link_id: dimension.link_id || "",

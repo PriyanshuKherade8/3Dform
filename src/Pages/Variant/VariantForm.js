@@ -75,11 +75,10 @@ const VariantForm = () => {
   const { mutate: addVariant } = useAddVariantData();
   const { data: variantData } = useGetVariantDataById(id);
   const { mutate: updateVariant } = useUpdateVariantData();
-  console.log("kvk", variantData?.data?.variant);
+
   const variantDataToSet = variantData?.data?.variant;
 
   const onSubmit = (data) => {
-    console.log("variantdata", data);
     const addPayload = { variant_item: { ...data } };
     const updatePayload = {
       variant_id: id,
@@ -87,7 +86,7 @@ const VariantForm = () => {
         ...data,
       },
     };
-    console.log("addPayloadv", updatePayload);
+
     !!id ? updateVariant(updatePayload) : addVariant(addPayload);
   };
 

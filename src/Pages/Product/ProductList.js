@@ -43,7 +43,6 @@ const ProductList = () => {
     error,
     isLoading,
   } = useGetProductListData(userProjectInfo);
-  console.log("productData", productData);
 
   const { data: userData } = useGetUserListData();
 
@@ -161,9 +160,7 @@ const ProductList = () => {
       },
     },
   });
-  const onSubmit = (data) => {
-    console.log("data", data);
-  };
+  const onSubmit = (data) => {};
 
   return (
     <CustomLayout variant={"outlined"}>

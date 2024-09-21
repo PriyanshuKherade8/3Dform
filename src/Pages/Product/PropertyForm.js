@@ -93,7 +93,6 @@ export const PropertyForm = ({
         // Handle variants array
         if (property.variants && property.variants.length > 0) {
           property.variants.forEach((variant, variantIndex) => {
-            console.log("variant111", variant);
             const transformedVariant = {
               ...variant,
               variant_id: {

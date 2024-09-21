@@ -254,16 +254,11 @@ const ExperienceForm = () => {
   });
 
   const { data: environmentListData } = useGetEnviromentListData();
-  console.log(
-    "environmentListData",
-    environmentListData?.data?.environmentList
-  );
 
   const { mutate: addExperience } = useAddExperience();
   const { mutate: updateExperience } = useUpdateExperienceData();
 
   const { data: controlListData } = useGetControlListData();
-  console.log("controlListData", controlListData);
 
   const controlList = controlListData?.data?.controlList?.map((item) => {
     return {
@@ -271,7 +266,6 @@ const ExperienceForm = () => {
       value: item?.id,
     };
   });
-  console.log("controlList", controlList);
 
   const { data: productListData } = useGetProductListData();
 
@@ -281,7 +275,6 @@ const ExperienceForm = () => {
       value: item?.id,
     };
   });
-  console.log("controlList", controlList);
 
   const environmentList = environmentListData?.data?.environmentList?.map(
     (item) => {
@@ -293,7 +286,7 @@ const ExperienceForm = () => {
   );
 
   const { data: experienceData } = useGetExperienceDataById(id);
-  console.log("aaexperienceData", experienceData?.data?.experience);
+
   const allExperienceData = experienceData?.data?.experience;
 
   useEffect(() => {
@@ -391,7 +384,7 @@ const ExperienceForm = () => {
     if (allExperienceData?.orbit_control && !!id) {
       // const controlData = allExperienceData.orbit_control;
       const controlData = allExperienceData.orbit_control?.[0];
-      console.log("controlData", controlData); // Extract the single orbit control object
+
       setValue("auto_rotate", {
         label:
           controlData?.auto_rotate === true
@@ -838,7 +831,6 @@ const ExperienceForm = () => {
 
   // Form submit handler
   const onSubmit = (data) => {
-    console.log("payload", data);
     const {
       enabled,
       auto_rotate,
@@ -1249,7 +1241,7 @@ const ExperienceForm = () => {
         })),
       },
     };
-    console.log("updatePayload", updatePayload);
+
     !!id ? updateExperience(updatePayload) : addExperience(addPayload);
   };
 
@@ -2184,7 +2176,7 @@ const CustomValuesForm = ({ control, productIndex, register, errors }) => {
       values: { x: "", y: "", z: "" },
     });
   };
-  console.log("customValuesFields11", customValuesFields, productIndex);
+
   return (
     // <Box mt={2}>
     //   {customValuesFields.map((customValueField, customValueIndex) => (

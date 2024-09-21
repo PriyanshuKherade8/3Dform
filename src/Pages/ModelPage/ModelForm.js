@@ -154,8 +154,6 @@ const ModelForm = () => {
     const updateModelData = convertPayloadForUpdate(data);
     const convertedData = convertPayload(data);
     !!id ? updateModel(updateModelData) : addModelForm(convertedData);
-    console.log("Original payload:", data);
-    console.log("convertPayloadForUpdate", updateModelData);
   };
   useEffect(() => {
     if (!!user && !!project) {

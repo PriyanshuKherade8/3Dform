@@ -144,9 +144,7 @@ const Experience = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("data", data);
-  };
+  const onSubmit = (data) => {};
 
   return (
     <CustomLayout variant={"outlined"}>
