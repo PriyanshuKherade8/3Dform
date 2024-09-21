@@ -227,7 +227,7 @@ const ProductForm = () => {
     // Transform the property link_id to only contain values
     const transformedProperties = property.map((prop) => ({
       ...prop,
-      link_id: prop.link_id.map((link) => link),
+      link_id: prop.link_id.map((link) => link?.link_id),
       variants: prop.variants.map((variant) => ({
         ...variant,
         variant_id: variant.variant_id.value,
