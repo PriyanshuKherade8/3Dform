@@ -20,8 +20,9 @@ export const PropertyForm = ({
   setValue,
   productDataToSet,
   id,
+  userProjectInfo,
 }) => {
-  const { data: variantData } = useGetVariantListData();
+  const { data: variantData } = useGetVariantListData(userProjectInfo);
   const variantList = variantData?.data?.variantList?.map((item) => {
     return {
       label: item?.variant_name,

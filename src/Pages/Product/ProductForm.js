@@ -822,6 +822,7 @@ const ProductForm = () => {
                         useFieldArray={useFieldArray}
                         productDataToSet={productDataToSet}
                         id={id}
+                        userProjectInfo={userProjectInfo}
                       />
                     </Box>
 
