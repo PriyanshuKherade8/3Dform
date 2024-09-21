@@ -65,7 +65,9 @@ const schema = yup.object().shape({
 const ModelForm = () => {
   let { id } = useParams();
   const location = useLocation();
-  console.log("idx", id, location?.pathname);
+  const queryParams = new URLSearchParams(location.search);
+  const user = queryParams.get("user");
+  const project = queryParams.get("project");
 
   const { data: modelDataById, error, isLoading } = useGetModelDataById(id);
   const modelData = modelDataById?.data;
@@ -155,21 +157,32 @@ const ModelForm = () => {
     console.log("Original payload:", data);
     console.log("convertPayloadForUpdate", updateModelData);
   };
-
+  useEffect(() => {
+    if (!!user && !!project) {
+      setValue("user_id", user);
+      setValue("project_id", project);
+    }
+  }, [user, project]);
   useEffect(() => {
     if (!!id && !!modelData) {
       // Set the simple fields
       // setValue("model_id", modelData?.model?.model_id);
       setValue("model_name", modelData?.model?.model_name);
       setValue("model_path", modelData?.model?.model_path);
-      setValue("project_id", {
-        label: modelData?.model?.project_id,
-        value: modelData?.model?.project_id,
-      });
-      setValue("user_id", {
-        label: modelData?.model?.user_id,
-        value: modelData?.model?.user_id,
-      });
+
+      // setValue("project_id", {
+      //   label: modelData?.model?.project_id,
+      //   value: modelData?.model?.project_id,
+      // });
+
+      // setValue("user_id", {
+      //   label: modelData?.model?.user_id,
+      //   value: modelData?.model?.user_id,
+
+      // });
+
+      setValue("project_id", modelData?.model?.project_id);
+      setValue("user_id", modelData?.model?.user_id);
 
       // Replace the links in the form with those from modelData
       if (modelData?.model?.links?.length) {
@@ -223,6 +236,17 @@ const ModelForm = () => {
               />
             </Grid>
             <Grid item xs={12} md={4}>
+              <TextField
+                id="user_id"
+                placeholder="Enter User Id"
+                label="User ID"
+                isRequired={true}
+                {...register("user_id")}
+                errors={errors}
+                readOnly={true}
+              />
+            </Grid>
+            {/* <Grid item xs={12} md={4}>
               <Dropdown
                 maxMenuHeight={200}
                 id="user_id"
@@ -234,8 +258,8 @@ const ModelForm = () => {
                 errors={errors}
                 onInput={true}
               />
-            </Grid>
-            <Grid item xs={12} md={4}>
+            </Grid> */}
+            {/* <Grid item xs={12} md={4}>
               <Dropdown
                 maxMenuHeight={200}
                 id="project_id"
@@ -246,6 +270,17 @@ const ModelForm = () => {
                 selectObj={[{ label: "PRJ1000000001", value: "PRJ1000000001" }]}
                 errors={errors}
                 onInput={true}
+              />
+            </Grid> */}
+            <Grid item xs={12} md={4}>
+              <TextField
+                id="project_id"
+                placeholder="Enter Project Id"
+                label="Project ID"
+                isRequired={true}
+                {...register("project_id")}
+                errors={errors}
+                readOnly={true}
               />
             </Grid>
             <Grid item xs={12} md={6}>

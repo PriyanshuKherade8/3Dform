@@ -32,14 +32,15 @@ export const useGetProjectListData = (id) => {
 };
 
 export const useGetListData = (userProjectInfo) => {
-  console.log("userProjectInfov", userProjectInfo);
+  const { selectedUser, selectedUserProject } = userProjectInfo || {};
+
   const { data, error, isLoading } = useQuery({
     queryKey: ["file_list_data", userProjectInfo],
     queryFn: () =>
       httpApi.get(
-        `/store/get_item_list?user=${userProjectInfo?.selectedUser}&project=${userProjectInfo?.selectedUserProject}`
+        `/store/get_item_list?user=${selectedUser}&project=${selectedUserProject}`
       ),
-    // enabled: !!userProjectInfo,
+    enabled: !!selectedUser && !!selectedUserProject,
   });
 
   return { data, error, isLoading };

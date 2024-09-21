@@ -56,10 +56,16 @@ export const useUpdateModelData = () => {
   return { mutate, isLoading, data, error };
 };
 
-export const useGetModelListData = () => {
+export const useGetModelListData = (userProjectInfo) => {
+  const { selectedUser, selectedUserProject } = userProjectInfo || {};
+
   const { data, error, isLoading } = useQuery({
-    queryKey: ["model_list"],
-    queryFn: () => httpClient.get("/get_model_list"),
+    queryKey: ["model_list", userProjectInfo],
+    queryFn: () =>
+      httpClient.get(
+        `/get_model_list?user=${selectedUser}&project=${selectedUserProject}`
+      ),
+    enabled: !!selectedUser && !!selectedUserProject,
   });
 
   return { data, error, isLoading };
