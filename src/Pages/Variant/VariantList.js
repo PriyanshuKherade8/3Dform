@@ -4,7 +4,7 @@ import {
   CustomPaper,
   CustomTypographyForTitle,
 } from "../../Styles/GlobalStyles/GlobalStyles";
-import { Button, IconButton } from "@mui/material";
+import { Button, CardContent, Grid, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
@@ -14,12 +14,49 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 import { useGetVariantListData } from "./VariantServices";
+import {
+  useGetProjectListData,
+  useGetUserListData,
+} from "../FileUpload/FileService";
+import { useForm } from "react-hook-form";
+import Dropdown from "../../Components/Dropdown/Dropdown";
 
 const VariantList = () => {
+  const {
+    register,
+    formState: { errors },
+    control,
+    watch,
+    handleSubmit,
+    reset,
+  } = useForm();
   const navigate = useNavigate();
 
-  const { data: variantData, error, isLoading } = useGetVariantListData();
-  console.log("variantData", variantData);
+  const { user, project } = watch();
+
+  const selectedUser = user?.value;
+  const selectedUserProject = project?.value;
+
+  const userProjectInfo = { selectedUser, selectedUserProject };
+
+  const {
+    data: variantData,
+    error,
+    isLoading,
+  } = useGetVariantListData(userProjectInfo);
+
+  const { data: userData } = useGetUserListData();
+
+  const userList = userData?.data?.user_list?.map((item) => ({
+    label: item?.user_name,
+    value: item?.user_id,
+  }));
+
+  const { data: projectData } = useGetProjectListData(selectedUser);
+  const projectList = projectData?.data?.project_list?.map((item) => ({
+    label: item?.project_name,
+    value: item?.project_id,
+  }));
 
   const data = useMemo(
     () => variantData?.data?.variantList?.map(({ id, ...rest }) => rest) || [],
@@ -32,6 +69,23 @@ const VariantList = () => {
 
   const handleDelete = (row) => {
     // Implement delete action or navigate to the delete page
+  };
+
+  const handleAddNewVariant = () => {
+    if (selectedUser && selectedUserProject) {
+      const params = new URLSearchParams();
+      params.append("user", selectedUser);
+      params.append("project", selectedUserProject);
+
+      navigate({
+        pathname: "/add-variant",
+        search: `?${params.toString()}`,
+      });
+    } else {
+      alert(
+        "Please select both a User and a Project before adding a new variant."
+      );
+    }
   };
 
   // Columns for the table
@@ -87,7 +141,7 @@ const VariantList = () => {
         variant="contained"
         color="primary"
         size="small"
-        onClick={() => navigate("/add-variant")}
+        onClick={handleAddNewVariant}
         sx={{
           marginLeft: "auto",
           backgroundColor: "#16325B",
@@ -108,6 +162,10 @@ const VariantList = () => {
     },
   });
 
+  const onSubmit = (data) => {
+    console.log("data", data);
+  };
+
   return (
     <CustomLayout variant={"outlined"}>
       <CustomPaper variant="outlined">
@@ -120,6 +178,38 @@ const VariantList = () => {
         >
           {"Variant List"}
         </CustomTypographyForTitle>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={3}>
+                <Dropdown
+                  maxMenuHeight={200}
+                  id="user"
+                  placeholder="Select"
+                  label="User"
+                  isRequired={true}
+                  control={control}
+                  selectObj={userList}
+                  errors={errors}
+                  onInput={true}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <Dropdown
+                  maxMenuHeight={200}
+                  id="project"
+                  placeholder="Select"
+                  label="Project"
+                  isRequired={true}
+                  control={control}
+                  selectObj={projectList}
+                  errors={errors}
+                  onInput={true}
+                />
+              </Grid>
+            </Grid>
+          </form>
+        </CardContent>
       </CustomPaper>
       <MaterialReactTable table={table} />
     </CustomLayout>

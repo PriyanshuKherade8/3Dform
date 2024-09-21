@@ -4,10 +4,15 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import queryClient from "../../queryClient";
 
-export const useGetVariantListData = () => {
+export const useGetVariantListData = (userProjectInfo) => {
+  const { selectedUser, selectedUserProject } = userProjectInfo || {};
   const { data, error, isLoading } = useQuery({
     queryKey: ["variant_list"],
-    queryFn: () => httpClient.get("/get_variant_list"),
+    queryFn: () =>
+      httpClient.get(
+        `/get_variant_list?user=${selectedUser}&project=${selectedUserProject}`
+      ),
+    enabled: !!selectedUser && !!selectedUserProject,
   });
 
   return { data, error, isLoading };
