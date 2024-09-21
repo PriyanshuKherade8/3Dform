@@ -7,7 +7,7 @@ import {
   PrimaryColor,
   TextColor,
 } from "../../Styles/GlobalStyles/GlobalStyles";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -36,6 +36,10 @@ import { generateUUID } from "../ModelPage/ModelForm";
 
 const ProductForm = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const user = queryParams.get("user");
+  const project = queryParams.get("project");
   const { data: productData } = useGetProductDataById(id);
   console.log("productData", productData);
   const { data: modelData, error, isLoading } = useGetModelListData();
@@ -259,6 +263,13 @@ const ProductForm = () => {
   const productDataToSet = productData?.data?.product;
 
   useEffect(() => {
+    if (!!user && !!project) {
+      setValue("user_id", user);
+      setValue("project_id", project);
+    }
+  }, [user, project]);
+
+  useEffect(() => {
     if (!!id && productData) {
       setValue("product_name", productDataToSet?.product_name);
       setValue("user_id", productDataToSet?.user_id);
@@ -368,6 +379,7 @@ const ProductForm = () => {
                 isRequired={true}
                 {...register("user_id")}
                 errors={errors}
+                readOnly={true}
               />
             </Grid>
             <Grid item xs={12} md={3}>
@@ -378,6 +390,7 @@ const ProductForm = () => {
                 isRequired={true}
                 {...register("project_id")}
                 errors={errors}
+                readOnly={true}
               />
             </Grid>
           </Grid>

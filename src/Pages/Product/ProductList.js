@@ -4,7 +4,7 @@ import {
   CustomPaper,
   CustomTypographyForTitle,
 } from "../../Styles/GlobalStyles/GlobalStyles";
-import { Button, IconButton } from "@mui/material";
+import { Button, CardContent, Grid, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
@@ -14,12 +14,49 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 import { useGetProductListData } from "./ProductServices";
+import { useForm } from "react-hook-form";
+import {
+  useGetProjectListData,
+  useGetUserListData,
+} from "../FileUpload/FileService";
+import Dropdown from "../../Components/Dropdown/Dropdown";
 
 const ProductList = () => {
-  const navigate = useNavigate();
+  const {
+    register,
+    formState: { errors },
+    control,
+    watch,
+    handleSubmit,
+    reset,
+  } = useForm();
 
-  const { data: productData, error, isLoading } = useGetProductListData();
+  const navigate = useNavigate();
+  const { user, project } = watch();
+
+  const selectedUser = user?.value;
+  const selectedUserProject = project?.value;
+  const userProjectInfo = { selectedUser, selectedUserProject };
+
+  const {
+    data: productData,
+    error,
+    isLoading,
+  } = useGetProductListData(userProjectInfo);
   console.log("productData", productData);
+
+  const { data: userData } = useGetUserListData();
+
+  const userList = userData?.data?.user_list?.map((item) => ({
+    label: item?.user_name,
+    value: item?.user_id,
+  }));
+
+  const { data: projectData } = useGetProjectListData(selectedUser);
+  const projectList = projectData?.data?.project_list?.map((item) => ({
+    label: item?.project_name,
+    value: item?.project_id,
+  }));
 
   const data = useMemo(
     () => productData?.data?.productList?.map(({ id, ...rest }) => rest) || [],
@@ -32,6 +69,23 @@ const ProductList = () => {
 
   const handleDelete = (row) => {
     // Implement delete action or navigate to the delete page
+  };
+
+  const handleAddNewProduct = () => {
+    if (selectedUser && selectedUserProject) {
+      const params = new URLSearchParams();
+      params.append("user", selectedUser);
+      params.append("project", selectedUserProject);
+
+      navigate({
+        pathname: "/add-product",
+        search: `?${params.toString()}`,
+      });
+    } else {
+      alert(
+        "Please select both a User and a Project before adding a new model."
+      );
+    }
   };
 
   // Columns for the table
@@ -87,7 +141,7 @@ const ProductList = () => {
         variant="contained"
         color="primary"
         size="small"
-        onClick={() => navigate("/add-product")}
+        onClick={handleAddNewProduct}
         sx={{
           marginLeft: "auto",
           backgroundColor: "#16325B",
@@ -107,6 +161,9 @@ const ProductList = () => {
       },
     },
   });
+  const onSubmit = (data) => {
+    console.log("data", data);
+  };
 
   return (
     <CustomLayout variant={"outlined"}>
@@ -120,6 +177,38 @@ const ProductList = () => {
         >
           {"Product List"}
         </CustomTypographyForTitle>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={3}>
+                <Dropdown
+                  maxMenuHeight={200}
+                  id="user"
+                  placeholder="Select"
+                  label="User"
+                  isRequired={true}
+                  control={control}
+                  selectObj={userList}
+                  errors={errors}
+                  onInput={true}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <Dropdown
+                  maxMenuHeight={200}
+                  id="project"
+                  placeholder="Select"
+                  label="Project"
+                  isRequired={true}
+                  control={control}
+                  selectObj={projectList}
+                  errors={errors}
+                  onInput={true}
+                />
+              </Grid>
+            </Grid>
+          </form>
+        </CardContent>
       </CustomPaper>
       <MaterialReactTable table={table} />
     </CustomLayout>

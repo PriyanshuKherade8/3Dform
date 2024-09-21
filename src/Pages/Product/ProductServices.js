@@ -4,10 +4,15 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import queryClient from "../../queryClient";
 
-export const useGetProductListData = () => {
+export const useGetProductListData = (userProjectInfo) => {
+  const { selectedUser, selectedUserProject } = userProjectInfo || {};
   const { data, error, isLoading } = useQuery({
     queryKey: ["product_list"],
-    queryFn: () => httpClient.get("/get_product_list"),
+    queryFn: () =>
+      httpClient.get(
+        `/get_product_list?user=${selectedUser}&project=${selectedUserProject}`
+      ),
+    enabled: !!selectedUser && !!selectedUserProject,
   });
 
   return { data, error, isLoading };
