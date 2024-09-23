@@ -389,7 +389,9 @@ const ExperienceForm = () => {
   useEffect(() => {
     if (allExperienceData?.orbit_control && !!id) {
       // const controlData = allExperienceData.orbit_control;
-      const controlData = allExperienceData.orbit_control?.[0];
+      const controlData = Array.isArray(allExperienceData.orbit_control)
+        ? allExperienceData.orbit_control[0]
+        : allExperienceData.orbit_control;
 
       setValue("auto_rotate", {
         label:
@@ -483,7 +485,11 @@ const ExperienceForm = () => {
       removeControl();
       allExperienceData?.controls?.map((control) => {
         appendControl({
-          control_id: control.control_id || "",
+          // control_id: control.control_id || "",
+          control_id: {
+            label: control.control_id,
+            value: control.control_id,
+          },
           is_control_active: {
             label:
               control.is_control_active === true
@@ -538,7 +544,11 @@ const ExperienceForm = () => {
                 ? "false"
                 : product.is_active,
           },
-          product: product.product || "",
+          // product: product.product || "",
+          product: {
+            label: product.product,
+            value: product.product,
+          },
           is_product_active: {
             label:
               product.is_product_active === true
@@ -557,9 +567,9 @@ const ExperienceForm = () => {
             id: customValue.id || "",
             object: customValue.object || "",
             values: {
-              x: customValue.values.x || "",
-              y: customValue.values.y || "",
-              z: customValue.values.z || "",
+              x: customValue?.values?.x || "",
+              y: customValue?.values?.y || "",
+              z: customValue?.values?.z || "",
             },
           })),
           product_key: product.product_key || "",

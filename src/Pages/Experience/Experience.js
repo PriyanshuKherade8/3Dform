@@ -28,6 +28,7 @@ const Experience = () => {
     watch,
     handleSubmit,
     reset,
+    getValues,
   } = useForm();
 
   const { user, project } = watch();
@@ -63,7 +64,23 @@ const Experience = () => {
   );
 
   const handleEdit = (row) => {
-    navigate(`/edit-experience/${row.experience_id}`);
+    const { user, project } = getValues();
+    const selectedUser = user?.value;
+    const selectedUserProject = project?.value;
+
+    console.log(
+      "Selected User and Project:",
+      selectedUser,
+      selectedUserProject
+    );
+
+    if (selectedUser && selectedUserProject) {
+      navigate(
+        `/edit-experience/${row.experience_id}?user=${selectedUser}&project=${selectedUserProject}`
+      );
+    } else {
+      alert("User or project is not selected");
+    }
   };
 
   const handleAddNewExperience = () => {
