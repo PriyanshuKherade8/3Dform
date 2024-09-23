@@ -135,7 +135,7 @@ export default function MiniDrawer() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Xculptor 3D
+            Xculptor-3D
           </Typography>
         </Toolbar>
       </AppBar>
