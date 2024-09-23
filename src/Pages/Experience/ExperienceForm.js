@@ -968,51 +968,49 @@ const ExperienceForm = () => {
           product_key: item.product_key,
         })),
 
-        orbit_control: [
-          {
-            enabled:
-              data?.enabled?.value === "true"
-                ? true
-                : data?.enabled?.value === "false"
-                ? false
-                : data?.enabled?.value,
-            auto_rotate:
-              data?.auto_rotate?.value === "true"
-                ? true
-                : data?.auto_rotate?.value === "false"
-                ? false
-                : data?.auto_rotate?.value,
-            enable_pan:
-              data?.enable_pan?.value === "true"
-                ? true
-                : data?.enable_pan?.value === "false"
-                ? false
-                : data?.enable_pan?.value,
-            enable_rotate:
-              data?.enable_rotate?.value === "true"
-                ? true
-                : data?.enable_rotate?.value === "false"
-                ? false
-                : data?.enable_rotate?.value,
-            enable_zoom:
-              data?.enable_zoom?.value === "true"
-                ? true
-                : data?.enable_zoom?.value === "false"
-                ? false
-                : data?.enable_zoom?.value,
-            max_azimuth_angle: data?.max_azimuth_angle,
-            min_azimuth_angle: data?.min_azimuth_angle,
-            max_polar_angle: data?.max_polar_angle,
-            min_polar_angle: data?.min_polar_angle,
-            min_zoom: data?.min_zoom,
-            max_zoom: data?.max_zoom,
-            target: {
-              x: data?.targetx,
-              y: data?.targety,
-              z: data?.targetz,
-            },
+        orbit_control: {
+          enabled:
+            data?.enabled?.value === "true"
+              ? true
+              : data?.enabled?.value === "false"
+              ? false
+              : data?.enabled?.value,
+          auto_rotate:
+            data?.auto_rotate?.value === "true"
+              ? true
+              : data?.auto_rotate?.value === "false"
+              ? false
+              : data?.auto_rotate?.value,
+          enable_pan:
+            data?.enable_pan?.value === "true"
+              ? true
+              : data?.enable_pan?.value === "false"
+              ? false
+              : data?.enable_pan?.value,
+          enable_rotate:
+            data?.enable_rotate?.value === "true"
+              ? true
+              : data?.enable_rotate?.value === "false"
+              ? false
+              : data?.enable_rotate?.value,
+          enable_zoom:
+            data?.enable_zoom?.value === "true"
+              ? true
+              : data?.enable_zoom?.value === "false"
+              ? false
+              : data?.enable_zoom?.value,
+          max_azimuth_angle: data?.max_azimuth_angle,
+          min_azimuth_angle: data?.min_azimuth_angle,
+          max_polar_angle: data?.max_polar_angle,
+          min_polar_angle: data?.min_polar_angle,
+          min_zoom: data?.min_zoom,
+          max_zoom: data?.max_zoom,
+          target: {
+            x: data?.targetx,
+            y: data?.targety,
+            z: data?.targetz,
           },
-        ],
+        },
 
         sequences: sequences.map((sequence) => ({
           ...sequence,
@@ -1154,51 +1152,49 @@ const ExperienceForm = () => {
           product_key: item.product_key,
         })),
 
-        orbit_control: [
-          {
-            enabled:
-              data?.enabled?.value === "true"
-                ? true
-                : data?.enabled?.value === "false"
-                ? false
-                : data?.enabled?.value,
-            auto_rotate:
-              data?.auto_rotate?.value === "true"
-                ? true
-                : data?.auto_rotate?.value === "false"
-                ? false
-                : data?.auto_rotate?.value,
-            enable_pan:
-              data?.enable_pan?.value === "true"
-                ? true
-                : data?.enable_pan?.value === "false"
-                ? false
-                : data?.enable_pan?.value,
-            enable_rotate:
-              data?.enable_rotate?.value === "true"
-                ? true
-                : data?.enable_rotate?.value === "false"
-                ? false
-                : data?.enable_rotate?.value,
-            enable_zoom:
-              data?.enable_zoom?.value === "true"
-                ? true
-                : data?.enable_zoom?.value === "false"
-                ? false
-                : data?.enable_zoom?.value,
-            max_azimuth_angle: data?.max_azimuth_angle,
-            min_azimuth_angle: data?.min_azimuth_angle,
-            max_polar_angle: data?.max_polar_angle,
-            min_polar_angle: data?.min_polar_angle,
-            min_zoom: data?.min_zoom,
-            max_zoom: data?.max_zoom,
-            target: {
-              x: data?.targetx,
-              y: data?.targety,
-              z: data?.targetz,
-            },
+        orbit_control: {
+          enabled:
+            data?.enabled?.value === "true"
+              ? true
+              : data?.enabled?.value === "false"
+              ? false
+              : data?.enabled?.value,
+          auto_rotate:
+            data?.auto_rotate?.value === "true"
+              ? true
+              : data?.auto_rotate?.value === "false"
+              ? false
+              : data?.auto_rotate?.value,
+          enable_pan:
+            data?.enable_pan?.value === "true"
+              ? true
+              : data?.enable_pan?.value === "false"
+              ? false
+              : data?.enable_pan?.value,
+          enable_rotate:
+            data?.enable_rotate?.value === "true"
+              ? true
+              : data?.enable_rotate?.value === "false"
+              ? false
+              : data?.enable_rotate?.value,
+          enable_zoom:
+            data?.enable_zoom?.value === "true"
+              ? true
+              : data?.enable_zoom?.value === "false"
+              ? false
+              : data?.enable_zoom?.value,
+          max_azimuth_angle: data?.max_azimuth_angle,
+          min_azimuth_angle: data?.min_azimuth_angle,
+          max_polar_angle: data?.max_polar_angle,
+          min_polar_angle: data?.min_polar_angle,
+          min_zoom: data?.min_zoom,
+          max_zoom: data?.max_zoom,
+          target: {
+            x: data?.targetx,
+            y: data?.targety,
+            z: data?.targetz,
           },
-        ],
+        },
 
         sequences: sequences.map((sequence) => ({
           ...sequence,
