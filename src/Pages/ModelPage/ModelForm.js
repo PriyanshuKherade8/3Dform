@@ -138,7 +138,7 @@ const ModelForm = () => {
 
     const convertPayloadForUpdate = (data) => {
       return {
-        model_id: data?.model_id,
+        model_id: id,
         item: {
           ...(({ model_id, ...rest }) => rest)(data),
           project_id: data?.project_id,
