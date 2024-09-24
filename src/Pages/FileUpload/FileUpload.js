@@ -163,8 +163,8 @@ const FileUpload = () => {
   }));
 
   const modeList = [
-    { label: "model", value: "model" },
-    { label: "material", value: "material" },
+    { label: "models", value: "models" },
+    { label: "materials", value: "materials" },
     { label: "icons", value: "icons" },
     { label: "images", value: "images" },
   ];
