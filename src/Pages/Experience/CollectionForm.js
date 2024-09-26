@@ -207,13 +207,7 @@ export const CollectionValuesForm = ({
     );
   };
 
-  const ViewFields = ({
-    control,
-    register,
-    errors,
-    actionFields,
-    shotIndex,
-  }) => {
+  const ViewFields = ({ control, register, errors, shotIndex }) => {
     const {
       fields: viewFieldsList,
       append: appendViewAction,
@@ -221,6 +215,17 @@ export const CollectionValuesForm = ({
     } = useFieldArray({
       control,
       name: `collections.${productIndex}.items.${shotIndex}.views`,
+      defaultValues: [
+        {
+          view_id: "",
+          view_name: "",
+          is_default: "",
+          view_icons: [{ file_type: "", path: "" }],
+          sequences: [
+            { sequence_id: "", is_first_sequence: "", previous_sequence: "" },
+          ],
+        },
+      ],
     });
 
     const addViewRow = () => {
@@ -228,91 +233,276 @@ export const CollectionValuesForm = ({
         view_id: "",
         view_name: "",
         is_default: "",
+        view_icons: [{ file_type: "", path: "" }], // default one view_icon
+        sequences: [
+          { sequence_id: "", is_first_sequence: "", previous_sequence: "" },
+        ], // default one sequence
       });
     };
 
-    console.log("viewFieldsList", viewFieldsList);
+    // Nested component to handle view_icons
+    const ViewIconFields = ({ control, register, errors, viewIndex }) => {
+      const {
+        fields: viewIconsList,
+        append: appendViewIcon,
+        remove: removeViewIcon,
+      } = useFieldArray({
+        control,
+        name: `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.view_icons`,
+        defaultValues: [{ file_type: "", path: "" }], // default one view_icon
+      });
+
+      const addViewIconRow = () => appendViewIcon({ file_type: "", path: "" });
+
+      return (
+        <>
+          {viewIconsList.map((viewIconField, viewIconIndex) => (
+            <Grid container spacing={2} key={viewIconField.id}>
+              <Grid item xs={4}>
+                <TextField
+                  label="File Type"
+                  defaultValue={viewIconField.file_type}
+                  {...register(
+                    `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.view_icons.${viewIconIndex}.file_type`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Path"
+                  defaultValue={viewIconField.path}
+                  {...register(
+                    `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.view_icons.${viewIconIndex}.path`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+
+              {/* Conditionally show remove button if more than one row */}
+              <Box
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "20px",
+                  paddingTop: "16px",
+                  marginLeft: "15px",
+                }}
+              >
+                {viewIconsList.length > 1 && (
+                  <Grid item>
+                    <Button
+                      onClick={() => removeViewIcon(viewIconIndex)}
+                      style={{ backgroundColor: DeleteColor, color: TextColor }}
+                    >
+                      Remove Icon
+                    </Button>
+                  </Grid>
+                )}
+                <Grid item>
+                  <Button
+                    onClick={addViewIconRow}
+                    style={{ backgroundColor: PrimaryColor, color: TextColor }}
+                  >
+                    Add View Icon
+                  </Button>
+                </Grid>
+              </Box>
+            </Grid>
+          ))}
+        </>
+      );
+    };
+
+    // Nested component to handle sequences
+    const SequenceFields = ({ control, register, errors, viewIndex }) => {
+      const {
+        fields: sequenceList,
+        append: appendSequence,
+        remove: removeSequence,
+      } = useFieldArray({
+        control,
+        name: `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.sequences`,
+        defaultValues: [
+          { sequence_id: "", is_first_sequence: "", previous_sequence: "" },
+        ], // default one sequence
+      });
+
+      const addSequenceRow = () =>
+        appendSequence({
+          sequence_id: "",
+          is_first_sequence: "",
+          previous_sequence: "",
+        });
+
+      return (
+        <>
+          {sequenceList.map((sequenceField, sequenceIndex) => (
+            <Grid container spacing={2} key={sequenceField.id}>
+              <Grid item xs={3}>
+                <TextField
+                  label="Sequence Id"
+                  defaultValue={sequenceField.sequence_id}
+                  {...register(
+                    `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.sequences.${sequenceIndex}.sequence_id`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  label="Is First Sequence"
+                  defaultValue={sequenceField.is_first_sequence}
+                  {...register(
+                    `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.sequences.${sequenceIndex}.is_first_sequence`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  label="Previous Sequence"
+                  defaultValue={sequenceField.previous_sequence}
+                  {...register(
+                    `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.sequences.${sequenceIndex}.previous_sequence`
+                  )}
+                  errors={errors}
+                  fullWidth
+                />
+              </Grid>
+
+              {/* Conditionally show remove button if more than one row */}
+
+              <Box
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "20px",
+                  paddingTop: "16px",
+                  marginLeft: "15px",
+                }}
+              >
+                {sequenceList.length > 1 && (
+                  <Grid item>
+                    <Button
+                      onClick={() => removeSequence(sequenceIndex)}
+                      style={{ backgroundColor: DeleteColor, color: TextColor }}
+                    >
+                      Remove Sequence
+                    </Button>
+                  </Grid>
+                )}
+                <Grid item>
+                  <Button
+                    onClick={addSequenceRow}
+                    style={{ backgroundColor: PrimaryColor, color: TextColor }}
+                  >
+                    Add Sequence
+                  </Button>
+                </Grid>
+              </Box>
+            </Grid>
+          ))}
+        </>
+      );
+    };
 
     return (
       <>
-        {viewFieldsList.map((actionField, actionIndex) => (
+        {viewFieldsList.map((actionField, viewIndex) => (
           <Grid container spacing={2} key={actionField.id}>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={3}>
               <TextField
                 label="View Id"
                 defaultValue={actionField.view_id}
                 {...register(
-                  `collections.${productIndex}.items.${shotIndex}.views.${actionIndex}.view_id`
+                  `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.view_id`
                 )}
                 errors={errors}
                 fullWidth
               />
             </Grid>
-
-            <Grid item xs={12} md={3}>
+            <Grid item xs={3}>
               <TextField
                 label="View Name"
-                defaultValue={actionField.view_id}
+                defaultValue={actionField.view_name}
                 {...register(
-                  `collections.${productIndex}.items.${shotIndex}.views.${actionIndex}.view_name`
+                  `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.view_name`
                 )}
                 errors={errors}
                 fullWidth
               />
             </Grid>
-
-            <Grid item xs={12} md={3}>
+            <Grid item xs={3}>
               <TextField
-                label="View Name"
-                defaultValue={actionField.view_id}
+                label="Is Default"
+                defaultValue={actionField.is_default}
                 {...register(
-                  `collections.${productIndex}.items.${shotIndex}.views.${actionIndex}.is_default`
+                  `collections.${productIndex}.items.${shotIndex}.views.${viewIndex}.is_default`
                 )}
                 errors={errors}
                 fullWidth
               />
             </Grid>
 
-            <Grid item xs={12} md={12}>
+            {/* View Icons Section */}
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">View Icons</Typography>
+              </CustomTypographyForTitle>
+              <ViewIconFields
+                control={control}
+                register={register}
+                errors={errors}
+                viewIndex={viewIndex}
+              />
+            </CustomPaper>
+
+            {/* Sequences Section */}
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Sequences</Typography>
+              </CustomTypographyForTitle>
+              <SequenceFields
+                control={control}
+                register={register}
+                errors={errors}
+                viewIndex={viewIndex}
+              />
+            </CustomPaper>
+
+            {/* Conditionally show remove view button if more than one row */}
+            <Box
+              style={{
+                width: "100%",
+              }}
+            >
               <Grid
                 container
-                spacing={2}
-                style={{
-                  display: "flex",
-                  alignItems: "end",
-                  justifyContent: "flex-end",
-                }}
+                spacing={1}
+                style={{ justifyContent: "flex-end", gap: "20px" }}
               >
-                {viewFieldsList.length !== 1 && (
-                  <Grid item>
-                    <Button
-                      size="small"
-                      style={{
-                        backgroundColor: DeleteColor,
-                        color: TextColor,
-                      }}
-                      onClick={() => removeViewAction(actionIndex)}
-                    >
-                      Remove View
-                    </Button>
-                  </Grid>
+                {viewFieldsList.length > 1 && (
+                  <Button
+                    onClick={() => removeViewAction(viewIndex)}
+                    style={{ backgroundColor: DeleteColor, color: TextColor }}
+                  >
+                    Remove View
+                  </Button>
                 )}
-                {viewFieldsList.length - 1 === actionIndex && (
-                  <Grid item>
-                    <Button
-                      size="small"
-                      onClick={addViewRow}
-                      style={{
-                        backgroundColor: PrimaryColor,
-                        color: TextColor,
-                      }}
-                    >
-                      Add View
-                    </Button>
-                  </Grid>
-                )}
+
+                <Button
+                  onClick={addViewRow}
+                  style={{ backgroundColor: PrimaryColor, color: TextColor }}
+                >
+                  Add View
+                </Button>
               </Grid>
-            </Grid>
+            </Box>
           </Grid>
         ))}
       </>
