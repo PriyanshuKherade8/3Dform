@@ -207,6 +207,118 @@ export const CollectionValuesForm = ({
     );
   };
 
+  const ViewFields = ({
+    control,
+    register,
+    errors,
+    actionFields,
+    shotIndex,
+  }) => {
+    const {
+      fields: viewFieldsList,
+      append: appendViewAction,
+      remove: removeViewAction,
+    } = useFieldArray({
+      control,
+      name: `collections.${productIndex}.items.${shotIndex}.views`,
+    });
+
+    const addViewRow = () => {
+      appendViewAction({
+        view_id: "",
+        view_name: "",
+        is_default: "",
+      });
+    };
+
+    console.log("viewFieldsList", viewFieldsList);
+
+    return (
+      <>
+        {viewFieldsList.map((actionField, actionIndex) => (
+          <Grid container spacing={2} key={actionField.id}>
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="View Id"
+                defaultValue={actionField.view_id}
+                {...register(
+                  `collections.${productIndex}.items.${shotIndex}.views.${actionIndex}.view_id`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="View Name"
+                defaultValue={actionField.view_id}
+                {...register(
+                  `collections.${productIndex}.items.${shotIndex}.views.${actionIndex}.view_name`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="View Name"
+                defaultValue={actionField.view_id}
+                {...register(
+                  `collections.${productIndex}.items.${shotIndex}.views.${actionIndex}.is_default`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+
+            <Grid item xs={12} md={12}>
+              <Grid
+                container
+                spacing={2}
+                style={{
+                  display: "flex",
+                  alignItems: "end",
+                  justifyContent: "flex-end",
+                }}
+              >
+                {viewFieldsList.length !== 1 && (
+                  <Grid item>
+                    <Button
+                      size="small"
+                      style={{
+                        backgroundColor: DeleteColor,
+                        color: TextColor,
+                      }}
+                      onClick={() => removeViewAction(actionIndex)}
+                    >
+                      Remove View
+                    </Button>
+                  </Grid>
+                )}
+                {viewFieldsList.length - 1 === actionIndex && (
+                  <Grid item>
+                    <Button
+                      size="small"
+                      onClick={addViewRow}
+                      style={{
+                        backgroundColor: PrimaryColor,
+                        color: TextColor,
+                      }}
+                    >
+                      Add View
+                    </Button>
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
+          </Grid>
+        ))}
+      </>
+    );
+  };
+
   return (
     <Box mt={2}>
       {customValuesFields.map((customValueField, customValueIndex) => (
@@ -291,6 +403,21 @@ export const CollectionValuesForm = ({
               </CustomTypographyForTitle>
             </CustomPaper>
             <PropertyFields
+              control={control}
+              register={register}
+              errors={errors}
+              actionFields={customValueField.action}
+              shotIndex={customValueIndex}
+            />
+          </CustomPaper>
+
+          <CustomPaper>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Views</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <ViewFields
               control={control}
               register={register}
               errors={errors}

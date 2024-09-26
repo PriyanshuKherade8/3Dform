@@ -225,6 +225,26 @@ const ExperienceForm = () => {
             },
           ],
           interactions: [],
+          views: [
+            {
+              view_id: "",
+              view_name: "",
+              is_default: "",
+              view_icons: [
+                {
+                  file_type: "",
+                  path: "",
+                },
+              ],
+              sequences: [
+                {
+                  sequence_id: "",
+                  is_first_sequence: "",
+                  previous_seuence: "",
+                },
+              ],
+            },
+          ],
           product_key: "",
         },
       ],
@@ -839,6 +859,26 @@ const ExperienceForm = () => {
             },
           ],
           interactions: [],
+          views: [
+            {
+              view_id: "",
+              view_name: "",
+              is_default: "",
+              view_icons: [
+                {
+                  file_type: "",
+                  path: "",
+                },
+              ],
+              sequences: [
+                {
+                  sequence_id: "",
+                  is_first_sequence: "",
+                  previous_seuence: "",
+                },
+              ],
+            },
+          ],
           product_key: "",
         },
       ],
