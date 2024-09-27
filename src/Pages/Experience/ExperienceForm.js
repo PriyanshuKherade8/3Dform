@@ -197,6 +197,7 @@ const ExperienceForm = () => {
               action_type: "",
               action_property: "",
               action_values: { x: "", y: "", z: "" },
+              clip_name: "",
             },
           ],
         },
@@ -647,6 +648,7 @@ const ExperienceForm = () => {
                 y: act.action_values?.y || "",
                 z: act.action_values?.z || "",
               },
+              clip_name: act.clip_name || "",
             })),
           })),
         });
@@ -859,6 +861,7 @@ const ExperienceForm = () => {
               action_type: "",
               action_property: "",
               action_values: { x: "", y: "", z: "" },
+              clip_name: "",
             },
           ],
         },
