@@ -660,7 +660,6 @@ const ExperienceForm = () => {
       allExperienceData?.collections.forEach((collection) => {
         appendCollections({
           collection_id: collection.collection_id || "",
-          // is_default: collection.is_default ? "true" : "false",
           is_default:
             collection.is_default === true
               ? "true"
@@ -670,7 +669,6 @@ const ExperienceForm = () => {
 
           items: collection.items.map((item) => ({
             item_id: item.item_id || "",
-            // is_first_item: item.is_first_item ? "true" : "false",
             is_first_item:
               item.is_first_item === true
                 ? "true"
@@ -691,6 +689,34 @@ const ExperienceForm = () => {
 
             interactions: item.interactions || [],
             product_key: item.product_key || "",
+
+            views:
+              item.views?.map((view) => ({
+                view_id: view.view_id || "",
+                view_name: view.view_name || "",
+                is_default:
+                  view.is_default === true
+                    ? "true"
+                    : view.is_default === false
+                    ? "false"
+                    : view.is_default,
+
+                view_icons: view.view_icons?.map((viewIcon) => ({
+                  file_type: viewIcon.file_type || "",
+                  path: viewIcon.path || "",
+                })),
+
+                sequences: view.sequences?.map((sequence) => ({
+                  sequence_id: sequence.sequence_id || "",
+                  is_first_sequence:
+                    sequence.is_first_sequence === true
+                      ? "true"
+                      : sequence.is_first_sequence === false
+                      ? "false"
+                      : sequence.is_first_sequence,
+                  previous_sequence: sequence.previous_sequence || "",
+                })),
+              })) || [],
           })),
         });
       });
