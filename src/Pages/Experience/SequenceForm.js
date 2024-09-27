@@ -42,6 +42,7 @@ export const SequenceValuesForm = ({
         {
           action_id: "",
           action_object_type: "",
+          action_clip_in_reverse: "",
           action_type: "",
           action_property: "",
           action_values: { x: "", y: "", z: "" },
@@ -71,6 +72,7 @@ export const SequenceValuesForm = ({
       appendAction({
         action_id: "",
         action_object_type: "",
+        action_clip_in_reverse: "",
         action_type: "",
         action_property: "",
         action_values: { x: "", y: "", z: "" },
@@ -103,6 +105,19 @@ export const SequenceValuesForm = ({
                 fullWidth
               />
             </Grid>
+
+            <Grid item xs={12} md={2}>
+              <TextField
+                label="Action Clip In Reverse"
+                defaultValue={actionField.action_clip_in_reverse}
+                {...register(
+                  `sequences.${productIndex}.shots.${shotIndex}.action.${actionIndex}.action_clip_in_reverse`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+
             <Grid item xs={12} md={2}>
               <TextField
                 label="Action Type"

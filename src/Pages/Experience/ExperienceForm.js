@@ -193,6 +193,7 @@ const ExperienceForm = () => {
             {
               action_id: "",
               action_object_type: "",
+              action_clip_in_reverse: "",
               action_type: "",
               action_property: "",
               action_values: { x: "", y: "", z: "" },
@@ -638,6 +639,7 @@ const ExperienceForm = () => {
             action: shot.action.map((act) => ({
               action_id: act.action_id || "",
               action_object_type: act.action_object_type || "",
+              action_clip_in_reverse: act.action_clip_in_reverse || "",
               action_type: act.action_type || "",
               action_property: act.action_property || "",
               action_values: {
@@ -853,6 +855,7 @@ const ExperienceForm = () => {
             {
               action_id: "",
               action_object_type: "",
+              action_clip_in_reverse: "",
               action_type: "",
               action_property: "",
               action_values: { x: "", y: "", z: "" },
@@ -1105,6 +1108,12 @@ const ExperienceForm = () => {
             },
             action: shot.action.map((action) => ({
               ...action,
+              action_clip_in_reverse:
+                action.action_clip_in_reverse === "true"
+                  ? true
+                  : action.action_clip_in_reverse === "false"
+                  ? false
+                  : action.action_clip_in_reverse,
             })),
           })),
         })),
@@ -1289,6 +1298,12 @@ const ExperienceForm = () => {
             },
             action: shot.action.map((action) => ({
               ...action,
+              action_clip_in_reverse:
+                action.action_clip_in_reverse === "true"
+                  ? true
+                  : action.action_clip_in_reverse === "false"
+                  ? false
+                  : action.action_clip_in_reverse,
             })),
           })),
         })),
