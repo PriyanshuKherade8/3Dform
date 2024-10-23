@@ -1028,15 +1028,20 @@ const ExperienceForm = () => {
               ? false
               : item.is_product_active,
 
-          custom_values: item.custom_values.map((custom) => ({
-            id: custom.id,
-            object: custom.object,
-            values: {
-              x: custom.values?.x,
-              y: custom.values?.y,
-              z: custom.values?.z,
-            },
-          })),
+          custom_values: item.custom_values.every(
+            (custom) =>
+              !custom.values?.x && !custom.values?.y && !custom.values?.z
+          )
+            ? []
+            : item.custom_values.map((custom) => ({
+                id: custom.id,
+                object: custom.object,
+                values: {
+                  x: custom.values?.x,
+                  y: custom.values?.y,
+                  z: custom.values?.z,
+                },
+              })),
           product_key: item.product_key,
         })),
 
