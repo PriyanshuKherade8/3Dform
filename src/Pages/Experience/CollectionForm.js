@@ -662,7 +662,6 @@ export const CollectionValuesForm = ({
           <Box
             mt={2}
             style={{
-              border: "1px solid red",
               display: "flex",
               justifyContent: "flex-end",
             }}
