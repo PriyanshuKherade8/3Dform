@@ -25,6 +25,48 @@ export const CollectionValuesForm = ({
     name: `collections.${productIndex}.items`,
   });
 
+  const addItemRow = () => {
+    appendCustomValue({
+      item_id: "",
+      is_first_item: "",
+      item_display_short_title: "",
+      item_display_long_title: "",
+      item_icons: [
+        {
+          file_type: "",
+          path: "",
+        },
+      ],
+      property: [
+        {
+          property_id: "",
+        },
+      ],
+      interactions: [],
+      views: [
+        {
+          view_id: "",
+          view_name: "",
+          is_default: "",
+          view_icons: [
+            {
+              file_type: "",
+              path: "",
+            },
+          ],
+          sequences: [
+            {
+              sequence_id: "",
+              is_first_sequence: "",
+              previous_sequence: "", // Corrected to match spelling
+            },
+          ],
+        },
+      ],
+      product_key: "",
+    });
+  };
+
   // Field array for dynamic actions within each shot
   const ActionFields = ({
     control,
@@ -589,7 +631,7 @@ export const CollectionValuesForm = ({
           <CustomPaper>
             <CustomPaper variant="outlined">
               <CustomTypographyForTitle>
-                <Typography variant="h6">property</Typography>
+                <Typography variant="h6">Property</Typography>
               </CustomTypographyForTitle>
             </CustomPaper>
             <PropertyFields
@@ -615,6 +657,35 @@ export const CollectionValuesForm = ({
               shotIndex={customValueIndex}
             />
           </CustomPaper>
+
+          {/* Add/remove buttons */}
+          <Box
+            mt={2}
+            style={{
+              border: "1px solid red",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Button
+              variant="contained"
+              style={{ backgroundColor: PrimaryColor }}
+              onClick={addItemRow}
+            >
+              Add Item
+            </Button>
+            <Button
+              variant="outlined"
+              style={{
+                backgroundColor: DeleteColor,
+                color: TextColor,
+              }}
+              onClick={() => removeCustomValue(customValueIndex)} // Remove current item
+              sx={{ ml: 2 }}
+            >
+              Remove Item
+            </Button>
+          </Box>
         </div>
       ))}
     </Box>
