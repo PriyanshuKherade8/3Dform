@@ -741,6 +741,24 @@ const ExperienceForm = () => {
     }
   }, [allExperienceData?.collections, id]);
 
+  // Prefill object states data
+  useEffect(() => {
+    if (allExperienceData?.object_states?.length > 0) {
+      removeObjectStates(); // Remove any existing data
+
+      allExperienceData?.object_states?.forEach((state) => {
+        appendObjectStates({
+          link_id: state.link_id || "",
+          is_active: state.is_active || "",
+          states_list: {
+            state_name: state.states_list?.state_name || "",
+            is_default: state.states_list?.is_default || "",
+          },
+        });
+      });
+    }
+  }, [allExperienceData?.object_states]);
+
   const booleanList = [
     { label: "True", value: "true" },
     { label: "False", value: "false" },
@@ -982,6 +1000,7 @@ const ExperienceForm = () => {
       cameraZ,
       sequences,
       collections,
+      object_states,
       // experience_id,
       ...restOfData
     } = data;
@@ -1049,6 +1068,23 @@ const ExperienceForm = () => {
                 : control.is_control_active,
           })),
         ],
+
+        object_states: object_states.every(
+          (state) =>
+            !state.link_id &&
+            !state.is_active &&
+            !state.states_list?.state_name &&
+            !state.states_list?.is_default
+        )
+          ? []
+          : object_states.map((state) => ({
+              link_id: state.link_id || "",
+              is_active: state.is_active || "",
+              states_list: {
+                state_name: state.states_list?.state_name || "",
+                is_default: state.states_list?.is_default || "",
+              },
+            })),
 
         products: products.map((item) => ({
           product: item.product?.value,
