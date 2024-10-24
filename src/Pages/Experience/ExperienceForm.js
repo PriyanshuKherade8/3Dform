@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CustomLayout,
   CustomPaper,
@@ -36,6 +36,7 @@ import {
 } from "./ExperienceServices";
 import { SequenceValuesForm } from "./SequenceForm";
 import { CollectionValuesForm } from "./CollectionForm";
+import StoryForm from "./StoryForm";
 
 // Yup validation schema
 const schema = yup.object().shape({
@@ -277,6 +278,31 @@ const ExperienceForm = () => {
     },
   ];
 
+  const initialStory = [
+    {
+      story_id: "",
+      is_active: "",
+      story_display_title: "",
+      chapters: [
+        {
+          chapter_id: "",
+          is_first_chapter: "",
+          previous_chapter: [""],
+          is_default: "",
+          display_title: "",
+          display_text: "",
+          sequences: [
+            {
+              sequence_id: "",
+              is_first_sequence: "",
+              previous_sequence: "",
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -284,6 +310,7 @@ const ExperienceForm = () => {
     setValue,
     getValues,
     watch,
+    useWatch,
     formState: { errors },
   } = useForm({
     // resolver: yupResolver(schema),
@@ -298,8 +325,28 @@ const ExperienceForm = () => {
       collections: initialcollections,
       object_states: initialObjectStates,
       lights: initialLights,
+      stories: initialStory,
     },
   });
+
+  const [mode, setMode] = useState(getValues("mode"));
+
+  useEffect(() => {
+    // Update mode state whenever the form value changes
+    const subscription = watch((value) => {
+      setMode(value.mode);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  console.log("Current mode:", mode);
+  const isSelectedModeStory = mode?.value === "is_story_mode";
+  const isSelectedModeCollection = mode?.value === "is_collection_mode";
+  console.log(
+    "isSelectedModeStory",
+    isSelectedModeStory,
+    isSelectedModeCollection
+  );
 
   const userProjectInfo = {
     selectedUser: user,
@@ -371,25 +418,6 @@ const ExperienceForm = () => {
     }
   }, [allExperienceData, setValue, experienceData, id]);
 
-  // viewport prefill
-  // useEffect(() => {
-  //   if (allExperienceData?.viewport?.length > 0 && !!id) {
-  //     setValue(
-  //       "viewport",
-  //       allExperienceData.viewport.map((view) => ({
-  //         viewport_name: view.viewport_name || "",
-  //         transition_lower_limit: view.transition_lower_limit || "",
-  //         transition_upper_limit: view.transition_upper_limit || "",
-  //         panel_position: view.panel_position || "",
-  //         panel_width: view.panel_width || "",
-  //         panel_height: view.panel_height || "",
-  //         is_canvas_fullscreen: view.is_canvas_fullscreen || false,
-  //         camera_adjustment_factor: view.camera_adjustment_factor || "",
-  //         camera_look_at_delta: view.camera_look_at_delta || "",
-  //       }))
-  //     );
-  //   }
-  // }, [allExperienceData?.viewport, setValue, id]);
   useEffect(() => {
     if (allExperienceData?.viewport?.length > 0 && !!id) {
       removeViewport();
@@ -884,6 +912,16 @@ const ExperienceForm = () => {
     name: "lights",
   });
 
+  // field array for Stories
+  const {
+    fields: StoriesFields,
+    append: appendStories,
+    remove: removeStories,
+  } = useFieldArray({
+    control,
+    name: "stories",
+  });
+  console.log("StoriesFields", StoriesFields);
   // Add new row functions for both viewports and controls
 
   const addViewportRow = () => {
@@ -1031,6 +1069,31 @@ const ExperienceForm = () => {
       color: "",
       position: { x: "", y: "", z: "" },
       target: { x: "", y: "", z: "" },
+    });
+  };
+
+  const addStoryRow = () => {
+    appendStories({
+      story_id: "",
+      is_active: "",
+      story_display_title: "",
+      chapters: [
+        {
+          chapter_id: "",
+          is_first_chapter: "",
+          previous_chapter: [""],
+          is_default: "",
+          display_title: "",
+          display_text: "",
+          sequences: [
+            {
+              sequence_id: "",
+              is_first_sequence: "",
+              previous_sequence: "",
+            },
+          ],
+        },
+      ],
     });
   };
 
@@ -1261,30 +1324,32 @@ const ExperienceForm = () => {
           })),
         })),
 
-        collections: collections.map((collection) => ({
-          ...collection,
-          is_default:
-            collection.is_default === "true"
-              ? true
-              : collection.is_default === "false"
-              ? false
-              : collection.is_default,
-          items: collection.items.map((item) => ({
-            ...item,
-            is_first_item:
-              item.is_first_item === "true"
-                ? true
-                : item.is_first_item === "false"
-                ? false
-                : item.is_first_item,
-            item_icons: item.item_icons.map((icon) => ({
-              ...icon,
-            })),
-            property: item.property.map((prop) => ({
-              ...prop,
-            })),
-          })),
-        })),
+        collections: isSelectedModeCollection
+          ? collections.map((collection) => ({
+              ...collection,
+              is_default:
+                collection.is_default === "true"
+                  ? true
+                  : collection.is_default === "false"
+                  ? false
+                  : collection.is_default,
+              items: collection.items.map((item) => ({
+                ...item,
+                is_first_item:
+                  item.is_first_item === "true"
+                    ? true
+                    : item.is_first_item === "false"
+                    ? false
+                    : item.is_first_item,
+                item_icons: item.item_icons.map((icon) => ({
+                  ...icon,
+                })),
+                property: item.property.map((prop) => ({
+                  ...prop,
+                })),
+              })),
+            }))
+          : [],
       },
     };
 
@@ -1451,30 +1516,32 @@ const ExperienceForm = () => {
           })),
         })),
 
-        collections: collections.map((collection) => ({
-          ...collection,
-          is_default:
-            collection.is_default === "true"
-              ? true
-              : collection.is_default === "false"
-              ? false
-              : collection.is_default,
-          items: collection.items.map((item) => ({
-            ...item,
-            is_first_item:
-              item.is_first_item === "true"
-                ? true
-                : item.is_first_item === "false"
-                ? false
-                : item.is_first_item,
-            item_icons: item.item_icons.map((icon) => ({
-              ...icon,
-            })),
-            property: item.property.map((prop) => ({
-              ...prop,
-            })),
-          })),
-        })),
+        collections: isSelectedModeCollection
+          ? collections.map((collection) => ({
+              ...collection,
+              is_default:
+                collection.is_default === "true"
+                  ? true
+                  : collection.is_default === "false"
+                  ? false
+                  : collection.is_default,
+              items: collection.items.map((item) => ({
+                ...item,
+                is_first_item:
+                  item.is_first_item === "true"
+                    ? true
+                    : item.is_first_item === "false"
+                    ? false
+                    : item.is_first_item,
+                item_icons: item.item_icons.map((icon) => ({
+                  ...icon,
+                })),
+                property: item.property.map((prop) => ({
+                  ...prop,
+                })),
+              })),
+            }))
+          : [],
       },
     };
 
@@ -2576,97 +2643,206 @@ const ExperienceForm = () => {
           {/* end */}
 
           {/* collections */}
-          <Box mt={3}>
-            <CustomPaper variant="outlined">
-              <CustomTypographyForTitle>
-                <Typography variant="h6">Collections</Typography>
-              </CustomTypographyForTitle>
-            </CustomPaper>
-            <CustomPaper variant="outlined">
-              <Box style={{ padding: "8px", width: "100%" }}>
-                {collectionsFields.map((field, index) => (
-                  <Grid container spacing={1} key={field.id}>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        id={`collections.${index}.collection_id`}
-                        label="Collection Id"
-                        defaultValue={field.collection_id}
-                        isRequired={true}
-                        {...register(`collections.${index}.collection_id`)}
-                        errors={errors}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        id={`collections.${index}.is_default`}
-                        label="Is Default"
-                        defaultValue={field.is_default}
-                        isRequired={true}
-                        {...register(`collections.${index}.is_default`)}
-                        errors={errors}
-                      />
-                    </Grid>
+          {isSelectedModeCollection && (
+            <Box mt={3}>
+              <CustomPaper variant="outlined">
+                <CustomTypographyForTitle>
+                  <Typography variant="h6">Collections</Typography>
+                </CustomTypographyForTitle>
+              </CustomPaper>
+              <CustomPaper variant="outlined">
+                <Box style={{ padding: "8px", width: "100%" }}>
+                  {collectionsFields.map((field, index) => (
+                    <Grid container spacing={1} key={field.id}>
+                      <Grid item xs={12} md={6}>
+                        <TextField
+                          id={`collections.${index}.collection_id`}
+                          label="Collection Id"
+                          defaultValue={field.collection_id}
+                          isRequired={true}
+                          {...register(`collections.${index}.collection_id`)}
+                          errors={errors}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <TextField
+                          id={`collections.${index}.is_default`}
+                          label="Is Default"
+                          defaultValue={field.is_default}
+                          isRequired={true}
+                          {...register(`collections.${index}.is_default`)}
+                          errors={errors}
+                        />
+                      </Grid>
 
-                    <Box
-                      style={{
-                        boxSizing: "border-box",
-                        width: "100%",
-                      }}
-                    >
-                      <CollectionValuesForm
-                        control={control}
-                        productIndex={index}
-                        register={register}
-                        errors={errors}
-                        setValue={setValue}
-                        getValues={getValues}
-                        useFieldArray={useFieldArray}
-                      />
-                    </Box>
+                      <Box
+                        style={{
+                          boxSizing: "border-box",
+                          width: "100%",
+                        }}
+                      >
+                        <CollectionValuesForm
+                          control={control}
+                          productIndex={index}
+                          register={register}
+                          errors={errors}
+                          setValue={setValue}
+                          getValues={getValues}
+                          useFieldArray={useFieldArray}
+                        />
+                      </Box>
 
-                    {/* Add/Remove Buttons aligned to the right */}
-                    <Grid item xs={12}>
-                      <Grid container justifyContent="flex-end" spacing={2}>
-                        {/* Remove Button - Only show if there's more than one row */}
-                        {collectionsFields.length !== 1 && (
-                          <Grid item>
-                            <Button
-                              type="button"
-                              variant="outlined"
-                              size="small"
-                              onClick={() => removeCollections(index)}
-                              style={{
-                                backgroundColor: DeleteColor,
-                                color: TextColor,
-                              }}
-                            >
-                              Remove Collection
-                            </Button>
-                          </Grid>
-                        )}
+                      {/* Add/Remove Buttons aligned to the right */}
+                      <Grid item xs={12}>
+                        <Grid container justifyContent="flex-end" spacing={2}>
+                          {/* Remove Button - Only show if there's more than one row */}
+                          {collectionsFields.length !== 1 && (
+                            <Grid item>
+                              <Button
+                                type="button"
+                                variant="outlined"
+                                size="small"
+                                onClick={() => removeCollections(index)}
+                                style={{
+                                  backgroundColor: DeleteColor,
+                                  color: TextColor,
+                                }}
+                              >
+                                Remove Collection
+                              </Button>
+                            </Grid>
+                          )}
 
-                        {/* Add Button only on the last row */}
-                        {collectionsFields.length - 1 === index && (
-                          <Grid item>
-                            <Button
-                              type="button"
-                              variant="contained"
-                              onClick={addCollectionsRow}
-                              size="small"
-                              style={{ backgroundColor: PrimaryColor }}
-                            >
-                              Add Collection
-                            </Button>
-                          </Grid>
-                        )}
+                          {/* Add Button only on the last row */}
+                          {collectionsFields.length - 1 === index && (
+                            <Grid item>
+                              <Button
+                                type="button"
+                                variant="contained"
+                                onClick={addCollectionsRow}
+                                size="small"
+                                style={{ backgroundColor: PrimaryColor }}
+                              >
+                                Add Collection
+                              </Button>
+                            </Grid>
+                          )}
+                        </Grid>
                       </Grid>
                     </Grid>
-                  </Grid>
-                ))}
-              </Box>
-            </CustomPaper>
-          </Box>
+                  ))}
+                </Box>
+              </CustomPaper>
+            </Box>
+          )}
           {/* end */}
+
+          {/* story */}
+          {isSelectedModeStory && (
+            <Box mt={3}>
+              <CustomPaper variant="outlined">
+                <CustomTypographyForTitle>
+                  <Typography variant="h6">Story</Typography>
+                </CustomTypographyForTitle>
+              </CustomPaper>
+              <CustomPaper variant="outlined">
+                <Box style={{ padding: "8px", width: "100%" }}>
+                  {StoriesFields.map((field, index) => (
+                    <Grid container spacing={1} key={field.id}>
+                      <Grid item xs={12} md={4}>
+                        <TextField
+                          id={`stories.${index}.story_id`}
+                          label="Story Id"
+                          defaultValue={field.story_id}
+                          isRequired={true}
+                          {...register(`stories.${index}.story_id`)}
+                          errors={errors}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} md={4}>
+                        <TextField
+                          id={`stories.${index}.is_active`}
+                          label="Is Active"
+                          defaultValue={field.is_active}
+                          isRequired={true}
+                          {...register(`stories.${index}.is_active`)}
+                          errors={errors}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} md={4}>
+                        <TextField
+                          id={`stories.${index}.story_display_title`}
+                          label="Story Display Title"
+                          defaultValue={field.story_display_title}
+                          isRequired={true}
+                          {...register(`stories.${index}.story_display_title`)}
+                          errors={errors}
+                        />
+                      </Grid>
+
+                      {/* <Box
+                        style={{
+                          boxSizing: "border-box",
+                          width: "100%",
+                        }}
+                      >
+                        <StoryForm
+                          control={control}
+                          productIndex={index}
+                          register={register}
+                          errors={errors}
+                          setValue={setValue}
+                          getValues={getValues}
+                          useFieldArray={useFieldArray}
+                        />
+                      </Box> */}
+
+                      {/* Add/Remove Buttons aligned to the right */}
+                      <Grid item xs={12}>
+                        <Grid container justifyContent="flex-end" spacing={2}>
+                          {/* Remove Button - Only show if there's more than one row */}
+                          {StoriesFields.length !== 1 && (
+                            <Grid item>
+                              <Button
+                                type="button"
+                                variant="outlined"
+                                size="small"
+                                onClick={() => removeStories(index)}
+                                style={{
+                                  backgroundColor: DeleteColor,
+                                  color: TextColor,
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            </Grid>
+                          )}
+
+                          {/* Add Button only on the last row */}
+                          {StoriesFields.length - 1 === index && (
+                            <Grid item>
+                              <Button
+                                type="button"
+                                variant="contained"
+                                onClick={addStoryRow}
+                                size="small"
+                                style={{ backgroundColor: PrimaryColor }}
+                              >
+                                Add
+                              </Button>
+                            </Grid>
+                          )}
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  ))}
+                </Box>
+              </CustomPaper>
+            </Box>
+          )}
+
           <CardActions
             style={{ justifyContent: "flex-end", marginTop: "16px" }}
           >
@@ -2705,94 +2881,6 @@ const CustomValuesForm = ({ control, productIndex, register, errors }) => {
   };
 
   return (
-    // <Box mt={2}>
-    //   {customValuesFields.map((customValueField, customValueIndex) => (
-    //     <Grid container spacing={2} key={customValueField.id}>
-    //       <Grid item xs={12} md={3}>
-    //         <TextField
-    //           label="ID"
-    //           defaultValue={customValueField.id}
-    //           {...register(
-    //             `products.${productIndex}.custom_values.${customValueIndex}.id`
-    //           )}
-    //           errors={errors}
-    //           fullWidth
-    //         />
-    //       </Grid>
-    //       <Grid item xs={12} md={3}>
-    //         <TextField
-    //           label="Object"
-    //           defaultValue={customValueField.object}
-    //           {...register(
-    //             `products.${productIndex}.custom_values.${customValueIndex}.object`
-    //           )}
-    //           errors={errors}
-    //           fullWidth
-    //         />
-    //       </Grid>
-    //       <Grid item xs={12} md={2}>
-    //         <TextField
-    //           label="X"
-    //           defaultValue={customValueField.values.x}
-    //           {...register(
-    //             `products.${productIndex}.custom_values.${customValueIndex}.values.x`
-    //           )}
-    //           errors={errors}
-    //           fullWidth
-    //         />
-    //       </Grid>
-    //       <Grid item xs={12} md={2}>
-    //         <TextField
-    //           label="Y"
-    //           defaultValue={customValueField.values.y}
-    //           {...register(
-    //             `products.${productIndex}.custom_values.${customValueIndex}.values.y`
-    //           )}
-    //           errors={errors}
-    //           fullWidth
-    //         />
-    //       </Grid>
-    //       <Grid item xs={12} md={2}>
-    //         <TextField
-    //           label="Z"
-    //           defaultValue={customValueField.values.z}
-    //           {...register(
-    //             `products.${productIndex}.custom_values.${customValueIndex}.values.z`
-    //           )}
-    //           errors={errors}
-    //           fullWidth
-    //         />
-    //       </Grid>
-
-    //       {/* Add/Remove buttons for custom values */}
-    //       <Grid item xs={12}>
-    //         <Grid container justifyContent="flex-end" spacing={2}>
-    //           {/* Remove Custom Value Button */}
-    //           {customValuesFields.length > 1 && (
-    //             <Grid item>
-    //               <Button
-    //                 variant="outlined"
-    //                 color="secondary"
-    //                 onClick={() => removeCustomValue(customValueIndex)}
-    //               >
-    //                 Remove Custom Value
-    //               </Button>
-    //             </Grid>
-    //           )}
-
-    //           {/* Add Custom Value Button */}
-    //           {customValueIndex === customValuesFields.length - 1 && (
-    //             <Grid item>
-    //               <Button variant="contained" onClick={addCustomValueRow}>
-    //                 Add Custom Value
-    //               </Button>
-    //             </Grid>
-    //           )}
-    //         </Grid>
-    //       </Grid>
-    //     </Grid>
-    //   ))}
-    // </Box>
     <Box mt={3}>
       <CustomPaper variant="outlined">
         <CustomTypographyForTitle>
