@@ -2729,42 +2729,73 @@ const ExperienceForm = () => {
                     {storyFields.map((story, index) => (
                       <div key={story.id} style={{ marginBottom: "20px" }}>
                         <h2>Story {index + 1}</h2>
-
-                        <TextField
-                          label="Story Id"
-                          {...register(`stories.${index}.story_id`)}
-                          errors={errors}
-                          fullWidth
-                        />
+                        <Grid container spacing={2} key={story.id}>
+                          <Grid item xs={12} md={4}>
+                            <TextField
+                              label="Story Id"
+                              {...register(`stories.${index}.story_id`)}
+                              errors={errors}
+                              fullWidth
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={4}>
+                            <TextField
+                              label="Is Active"
+                              {...register(`stories.${index}.is_active`)}
+                              errors={errors}
+                              fullWidth
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={4}>
+                            <TextField
+                              label="Story Display Title"
+                              {...register(
+                                `stories.${index}.story_display_title`
+                              )}
+                              errors={errors}
+                              fullWidth
+                            />
+                          </Grid>
+                        </Grid>
                         <StoryComponent
                           control={control}
                           storyIndex={index}
                           register={register}
                         />
                         {/* Remove button only if more than one story exists */}
-                        {storyFields.length > 1 && (
+                        <Box
+                          style={{
+                            display: "flex",
+                            gap: "10px",
+                            width: "100%",
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          {storyFields.length > 1 && (
+                            <Button
+                              size="small"
+                              style={{
+                                backgroundColor: DeleteColor,
+                                color: TextColor,
+                              }}
+                              onClick={() => removeStory(index)}
+                            >
+                              Remove Story
+                            </Button>
+                          )}
+
                           <Button
-                            size="small"
+                            onClick={addStoryRow}
                             style={{
-                              backgroundColor: DeleteColor,
+                              backgroundColor: PrimaryColor,
                               color: TextColor,
                             }}
-                            onClick={() => removeStory(index)}
                           >
-                            Remove Story
+                            Add Story
                           </Button>
-                        )}
+                        </Box>
                       </div>
                     ))}
-                    <Button
-                      onClick={addStoryRow}
-                      style={{
-                        backgroundColor: PrimaryColor,
-                        color: TextColor,
-                      }}
-                    >
-                      Add Story
-                    </Button>
                   </form>
                 </Box>
               </CustomPaper>
