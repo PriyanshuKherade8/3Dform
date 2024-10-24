@@ -46,6 +46,7 @@ export const SequenceValuesForm = ({
           action_type: "",
           action_property: "",
           action_values: { x: "", y: "", z: "" },
+          actionvalues: "",
           clip_name: "",
         },
       ],
@@ -77,6 +78,7 @@ export const SequenceValuesForm = ({
         action_type: "",
         action_property: "",
         action_values: { x: "", y: "", z: "" },
+        actionvalues: "",
         clip_name: "",
       });
     };
@@ -182,6 +184,18 @@ export const SequenceValuesForm = ({
                 defaultValue={actionField.clip_name}
                 {...register(
                   `sequences.${productIndex}.shots.${shotIndex}.action.${actionIndex}.clip_name`
+                )}
+                errors={errors}
+                fullWidth
+              />
+            </Grid>
+
+            <Grid item xs={12} md={2}>
+              <TextField
+                label="Action values"
+                defaultValue={actionField.actionvalues}
+                {...register(
+                  `sequences.${productIndex}.shots.${shotIndex}.action.${actionIndex}.actionvalues`
                 )}
                 errors={errors}
                 fullWidth
