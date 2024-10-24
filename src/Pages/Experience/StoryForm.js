@@ -330,7 +330,8 @@ const StoryForm = ({
       </>
     );
   };
-  console.log("StoriesFields", StoriesFields);
+
+  console.log("StoriesFields123---------", StoriesFields);
   return (
     <Box mt={2}>
       {StoriesFields.map((storyField, storyIndex) => (
@@ -348,7 +349,7 @@ const StoryForm = ({
         onClick={addStoryRow}
         style={{ backgroundColor: PrimaryColor, color: TextColor }}
       >
-        Add Story
+        Add Story-test
       </Button>
     </Box>
   );

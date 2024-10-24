@@ -36,7 +36,8 @@ import {
 } from "./ExperienceServices";
 import { SequenceValuesForm } from "./SequenceForm";
 import { CollectionValuesForm } from "./CollectionForm";
-import StoryForm from "./StoryForm";
+
+import StoryComponent from "./StoryComponent";
 
 // Yup validation schema
 const schema = yup.object().shape({
@@ -283,23 +284,7 @@ const ExperienceForm = () => {
       story_id: "",
       is_active: "",
       story_display_title: "",
-      chapters: [
-        {
-          chapter_id: "",
-          is_first_chapter: "",
-          previous_chapter: [""],
-          is_default: "",
-          display_title: "",
-          display_text: "",
-          sequences: [
-            {
-              sequence_id: "",
-              is_first_sequence: "",
-              previous_sequence: "",
-            },
-          ],
-        },
-      ],
+      chapters: [],
     },
   ];
 
@@ -921,7 +906,24 @@ const ExperienceForm = () => {
     control,
     name: "stories",
   });
-  console.log("StoriesFields", StoriesFields);
+
+  const {
+    fields: storyFields,
+    append: appendStory,
+    remove: removeStory,
+  } = useFieldArray({
+    control,
+    name: "stories",
+  });
+
+  const addStoryRow = () => {
+    appendStory({
+      story_id: "",
+      is_active: "",
+      story_display_title: "",
+      chapters: [],
+    });
+  };
   // Add new row functions for both viewports and controls
 
   const addViewportRow = () => {
@@ -1069,31 +1071,6 @@ const ExperienceForm = () => {
       color: "",
       position: { x: "", y: "", z: "" },
       target: { x: "", y: "", z: "" },
-    });
-  };
-
-  const addStoryRow = () => {
-    appendStories({
-      story_id: "",
-      is_active: "",
-      story_display_title: "",
-      chapters: [
-        {
-          chapter_id: "",
-          is_first_chapter: "",
-          previous_chapter: [""],
-          is_default: "",
-          display_title: "",
-          display_text: "",
-          sequences: [
-            {
-              sequence_id: "",
-              is_first_sequence: "",
-              previous_sequence: "",
-            },
-          ],
-        },
-      ],
     });
   };
 
@@ -2747,97 +2724,48 @@ const ExperienceForm = () => {
               </CustomPaper>
               <CustomPaper variant="outlined">
                 <Box style={{ padding: "8px", width: "100%" }}>
-                  {StoriesFields.map((field, index) => (
-                    <Grid container spacing={1} key={field.id}>
-                      <Grid item xs={12} md={4}>
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <h1>Story Form</h1>
+                    {storyFields.map((story, index) => (
+                      <div key={story.id} style={{ marginBottom: "20px" }}>
+                        <h2>Story {index + 1}</h2>
+
                         <TextField
-                          id={`stories.${index}.story_id`}
                           label="Story Id"
-                          defaultValue={field.story_id}
-                          isRequired={true}
                           {...register(`stories.${index}.story_id`)}
                           errors={errors}
+                          fullWidth
                         />
-                      </Grid>
-
-                      <Grid item xs={12} md={4}>
-                        <TextField
-                          id={`stories.${index}.is_active`}
-                          label="Is Active"
-                          defaultValue={field.is_active}
-                          isRequired={true}
-                          {...register(`stories.${index}.is_active`)}
-                          errors={errors}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12} md={4}>
-                        <TextField
-                          id={`stories.${index}.story_display_title`}
-                          label="Story Display Title"
-                          defaultValue={field.story_display_title}
-                          isRequired={true}
-                          {...register(`stories.${index}.story_display_title`)}
-                          errors={errors}
-                        />
-                      </Grid>
-
-                      {/* <Box
-                        style={{
-                          boxSizing: "border-box",
-                          width: "100%",
-                        }}
-                      >
-                        <StoryForm
+                        <StoryComponent
                           control={control}
-                          productIndex={index}
+                          storyIndex={index}
                           register={register}
-                          errors={errors}
-                          setValue={setValue}
-                          getValues={getValues}
-                          useFieldArray={useFieldArray}
                         />
-                      </Box> */}
-
-                      {/* Add/Remove Buttons aligned to the right */}
-                      <Grid item xs={12}>
-                        <Grid container justifyContent="flex-end" spacing={2}>
-                          {/* Remove Button - Only show if there's more than one row */}
-                          {StoriesFields.length !== 1 && (
-                            <Grid item>
-                              <Button
-                                type="button"
-                                variant="outlined"
-                                size="small"
-                                onClick={() => removeStories(index)}
-                                style={{
-                                  backgroundColor: DeleteColor,
-                                  color: TextColor,
-                                }}
-                              >
-                                Remove
-                              </Button>
-                            </Grid>
-                          )}
-
-                          {/* Add Button only on the last row */}
-                          {StoriesFields.length - 1 === index && (
-                            <Grid item>
-                              <Button
-                                type="button"
-                                variant="contained"
-                                onClick={addStoryRow}
-                                size="small"
-                                style={{ backgroundColor: PrimaryColor }}
-                              >
-                                Add
-                              </Button>
-                            </Grid>
-                          )}
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  ))}
+                        {/* Remove button only if more than one story exists */}
+                        {storyFields.length > 1 && (
+                          <Button
+                            size="small"
+                            style={{
+                              backgroundColor: DeleteColor,
+                              color: TextColor,
+                            }}
+                            onClick={() => removeStory(index)}
+                          >
+                            Remove Story
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    <Button
+                      onClick={addStoryRow}
+                      style={{
+                        backgroundColor: PrimaryColor,
+                        color: TextColor,
+                      }}
+                    >
+                      Add Story
+                    </Button>
+                  </form>
                 </Box>
               </CustomPaper>
             </Box>
