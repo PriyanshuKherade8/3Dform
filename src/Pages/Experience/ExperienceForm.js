@@ -254,6 +254,17 @@ const ExperienceForm = () => {
     },
   ];
 
+  const initialObjectStates = [
+    {
+      link_id: "",
+      is_active: "",
+      states_list: {
+        state_name: "",
+        is_default: "",
+      },
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -273,6 +284,7 @@ const ExperienceForm = () => {
       products: initialProducts,
       sequences: initialSequence,
       collections: initialcollections,
+      object_states: initialObjectStates,
     },
   });
 
@@ -794,7 +806,18 @@ const ExperienceForm = () => {
     name: "collections",
   });
 
+  // field array for object states
+  const {
+    fields: ObjectStatesFields,
+    append: appendObjectStates,
+    remove: removeObjectStates,
+  } = useFieldArray({
+    control,
+    name: "object_states",
+  });
+
   // Add new row functions for both viewports and controls
+
   const addViewportRow = () => {
     appendViewport({
       viewport_name: "",
@@ -917,6 +940,17 @@ const ExperienceForm = () => {
           product_key: "",
         },
       ],
+    });
+  };
+
+  const addObjectStatesRow = () => {
+    appendObjectStates({
+      link_id: "",
+      is_active: "",
+      states_list: {
+        state_name: "",
+        is_default: "",
+      },
     });
   };
 
@@ -1953,6 +1987,108 @@ const ExperienceForm = () => {
                   />
                 </Grid>
               </Grid>
+            </CustomPaper>
+          </Box>
+
+          {/* Object states */}
+          <Box mt={3}>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Object States</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <CustomPaper variant="outlined">
+              <Box style={{ padding: "8px", width: "100%" }}>
+                {ObjectStatesFields.map((field, index) => (
+                  <Grid container spacing={1} key={field.id}>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`object_states.${index}.link_id`}
+                        label="Link Id"
+                        defaultValue={field.link_id}
+                        isRequired={true}
+                        {...register(`object_states.${index}.link_id`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`object_states.${index}.is_active`}
+                        label="Is Active"
+                        defaultValue={field.is_active}
+                        isRequired={true}
+                        {...register(`object_states.${index}.is_active`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`object_states.${index}.states_list.state_name`}
+                        label="State Name"
+                        defaultValue={field.states_list.state_name}
+                        isRequired={true}
+                        {...register(
+                          `object_states.${index}.states_list.state_name`
+                        )}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`object_states.${index}.states_list.is_default`}
+                        label="Is Default"
+                        defaultValue={field.states_list.is_default}
+                        isRequired={true}
+                        {...register(
+                          `object_states.${index}.states_list.is_default`
+                        )}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    {/* Add/Remove Buttons aligned to the right */}
+                    <Grid item xs={12}>
+                      <Grid container justifyContent="flex-end" spacing={2}>
+                        {/* Remove Button - Only show if there's more than one row */}
+                        {ObjectStatesFields.length !== 1 && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              size="small"
+                              onClick={() => removeObjectStates(index)}
+                              style={{
+                                backgroundColor: DeleteColor,
+                                color: TextColor,
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </Grid>
+                        )}
+
+                        {/* Add Button only on the last row */}
+                        {ObjectStatesFields.length - 1 === index && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="contained"
+                              onClick={addObjectStatesRow}
+                              size="small"
+                              style={{ backgroundColor: PrimaryColor }}
+                            >
+                              Add
+                            </Button>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                ))}
+              </Box>
             </CustomPaper>
           </Box>
 
