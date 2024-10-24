@@ -265,6 +265,18 @@ const ExperienceForm = () => {
     },
   ];
 
+  const initialLights = [
+    {
+      type: "",
+      link_id: "",
+      is_active: "",
+      intensity: "",
+      color: "",
+      position: { x: "", y: "", z: "" },
+      target: { x: "", y: "", z: "" },
+    },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -285,6 +297,7 @@ const ExperienceForm = () => {
       sequences: initialSequence,
       collections: initialcollections,
       object_states: initialObjectStates,
+      lights: initialLights,
     },
   });
 
@@ -759,6 +772,33 @@ const ExperienceForm = () => {
     }
   }, [allExperienceData?.object_states]);
 
+  // Prefill object lights
+  useEffect(() => {
+    if (allExperienceData?.lights?.length > 0) {
+      removeLights(); // First, clear the existing lights
+
+      allExperienceData?.lights.forEach((light) => {
+        appendLights({
+          type: light.type || "",
+          link_id: light.link_id || "",
+          is_active: light.is_active || "",
+          intensity: light.intensity || "",
+          color: light.color || "",
+          position: {
+            x: light.position?.x || "",
+            y: light.position?.y || "",
+            z: light.position?.z || "",
+          },
+          target: {
+            x: light.target?.x || "",
+            y: light.target?.y || "",
+            z: light.target?.z || "",
+          },
+        });
+      });
+    }
+  }, [allExperienceData?.lights]);
+
   const booleanList = [
     { label: "True", value: "true" },
     { label: "False", value: "false" },
@@ -832,6 +872,16 @@ const ExperienceForm = () => {
   } = useFieldArray({
     control,
     name: "object_states",
+  });
+
+  // field array for lights
+  const {
+    fields: lightsFields,
+    append: appendLights,
+    remove: removeLights,
+  } = useFieldArray({
+    control,
+    name: "lights",
   });
 
   // Add new row functions for both viewports and controls
@@ -969,6 +1019,18 @@ const ExperienceForm = () => {
         state_name: "",
         is_default: "",
       },
+    });
+  };
+
+  const addLightsRow = () => {
+    appendLights({
+      type: "",
+      link_id: "",
+      is_active: "",
+      intensity: "",
+      color: "",
+      position: { x: "", y: "", z: "" },
+      target: { x: "", y: "", z: "" },
     });
   };
 
@@ -2113,6 +2175,195 @@ const ExperienceForm = () => {
                               type="button"
                               variant="contained"
                               onClick={addObjectStatesRow}
+                              size="small"
+                              style={{ backgroundColor: PrimaryColor }}
+                            >
+                              Add
+                            </Button>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                ))}
+              </Box>
+            </CustomPaper>
+          </Box>
+
+          {/* Lights controls */}
+          <Box mt={3}>
+            <CustomPaper variant="outlined">
+              <CustomTypographyForTitle>
+                <Typography variant="h6">Lights</Typography>
+              </CustomTypographyForTitle>
+            </CustomPaper>
+            <CustomPaper variant="outlined">
+              <Box style={{ padding: "8px", width: "100%" }}>
+                {lightsFields.map((field, index) => (
+                  <Grid container spacing={1} key={field.id}>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`lights.${index}.link_id`}
+                        label="Link Id"
+                        defaultValue={field.link_id}
+                        isRequired={true}
+                        {...register(`lights.${index}.link_id`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`lights.${index}.type`}
+                        label="Type"
+                        defaultValue={field.type}
+                        isRequired={true}
+                        {...register(`lights.${index}.type`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`lights.${index}.is_active`}
+                        label="Is Active"
+                        defaultValue={field.is_active}
+                        isRequired={true}
+                        {...register(`lights.${index}.is_active`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`lights.${index}.intensity`}
+                        label="Intensity"
+                        defaultValue={field.intensity}
+                        isRequired={true}
+                        {...register(`lights.${index}.intensity`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        id={`lights.${index}.color`}
+                        label="Color"
+                        defaultValue={field.color}
+                        isRequired={true}
+                        {...register(`lights.${index}.color`)}
+                        errors={errors}
+                      />
+                    </Grid>
+
+                    <CustomPaper variant="outlined">
+                      <CustomTypographyForTitle>
+                        <Typography variant="h6">position</Typography>
+                      </CustomTypographyForTitle>
+                      <Box style={{ padding: "8px", width: "100%" }}>
+                        <Grid container spacing={1} key={field.id}>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              id={`lights.${index}.position.x`}
+                              label="Position X"
+                              defaultValue={field.position.x}
+                              isRequired={true}
+                              {...register(`lights.${index}.position.x`)}
+                              errors={errors}
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              id={`lights.${index}.position.y`}
+                              label="Position Y"
+                              defaultValue={field.position.y}
+                              isRequired={true}
+                              {...register(`lights.${index}.position.y`)}
+                              errors={errors}
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              id={`lights.${index}.position.z`}
+                              label="Position Z"
+                              defaultValue={field.position.z}
+                              isRequired={true}
+                              {...register(`lights.${index}.position.z`)}
+                              errors={errors}
+                            />
+                          </Grid>
+                        </Grid>
+                      </Box>
+                    </CustomPaper>
+
+                    <CustomPaper variant="outlined">
+                      <CustomTypographyForTitle>
+                        <Typography variant="h6">target</Typography>
+                      </CustomTypographyForTitle>
+                      <Box style={{ padding: "8px", width: "100%" }}>
+                        <Grid container spacing={1} key={field.id}>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              id={`lights.${index}.target.x`}
+                              label="Target X"
+                              defaultValue={field.target.x}
+                              isRequired={true}
+                              {...register(`lights.${index}.target.x`)}
+                              errors={errors}
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              id={`lights.${index}.target.y`}
+                              label="Target Y"
+                              defaultValue={field.target.y}
+                              isRequired={true}
+                              {...register(`lights.${index}.target.y`)}
+                              errors={errors}
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              id={`lights.${index}.target.z`}
+                              label="Target Z"
+                              defaultValue={field.target.z}
+                              isRequired={true}
+                              {...register(`lights.${index}.target.z`)}
+                              errors={errors}
+                            />
+                          </Grid>
+                        </Grid>
+                      </Box>
+                    </CustomPaper>
+
+                    {/* Add/Remove Buttons aligned to the right */}
+                    <Grid item xs={12}>
+                      <Grid container justifyContent="flex-end" spacing={2}>
+                        {/* Remove Button - Only show if there's more than one row */}
+                        {lightsFields.length !== 1 && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              size="small"
+                              onClick={() => removeLights(index)}
+                              style={{
+                                backgroundColor: DeleteColor,
+                                color: TextColor,
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </Grid>
+                        )}
+
+                        {/* Add Button only on the last row */}
+                        {lightsFields.length - 1 === index && (
+                          <Grid item>
+                            <Button
+                              type="button"
+                              variant="contained"
+                              onClick={addLightsRow}
                               size="small"
                               style={{ backgroundColor: PrimaryColor }}
                             >
