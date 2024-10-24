@@ -1,6 +1,6 @@
 import { Button, Grid } from "@mui/material";
 import React from "react";
-import { useFieldArray, Controller } from "react-hook-form";
+import { useFieldArray } from "react-hook-form";
 import {
   DeleteColor,
   PrimaryColor,
@@ -9,7 +9,6 @@ import {
 import TextField from "../../Components/TextField/TextField";
 
 const StoryComponent = ({ control, storyIndex, register }) => {
-  // Field array for chapters within a story
   const {
     fields: chapterFields,
     append: appendChapter,
@@ -34,15 +33,17 @@ const StoryComponent = ({ control, storyIndex, register }) => {
           }}
         >
           <h4>Chapter {chapterIndex + 1}</h4>
-          <Button
-            style={{
-              backgroundColor: DeleteColor,
-              color: TextColor,
-            }}
-            onClick={() => removeChapter(chapterIndex)}
-          >
-            Remove Chapter
-          </Button>
+          {chapterFields.length > 1 && (
+            <Button
+              style={{
+                backgroundColor: DeleteColor,
+                color: TextColor,
+              }}
+              onClick={() => removeChapter(chapterIndex)}
+            >
+              Remove Chapter
+            </Button>
+          )}
           <Grid container spacing={2} key={chapter.id}>
             <Grid item xs={12} md={3}>
               <TextField
@@ -91,7 +92,7 @@ const StoryComponent = ({ control, storyIndex, register }) => {
             </Grid>
             <Grid item xs={12} md={3}>
               <TextField
-                label={"Is Previous Chapter"}
+                label={"Previous Chapter"}
                 {...register(
                   `stories.${storyIndex}.chapters.${chapterIndex}.previous_chapter`
                 )}
@@ -114,7 +115,13 @@ const StoryComponent = ({ control, storyIndex, register }) => {
           color: TextColor,
         }}
         onClick={() =>
-          appendChapter({ chapter_id: "", display_title: "", sequences: [] })
+          appendChapter({
+            chapter_id: "",
+            display_title: "",
+            sequences: [
+              { sequence_id: "", is_first_sequence: "", previous_sequence: "" },
+            ],
+          })
         }
       >
         Add Chapter
@@ -144,15 +151,17 @@ const SequencesComponent = ({
       <h5>Sequences</h5>
       {sequenceFields.map((sequence, sequenceIndex) => (
         <div key={sequence.id}>
-          <Button
-            style={{
-              backgroundColor: DeleteColor,
-              color: TextColor,
-            }}
-            onClick={() => removeSequence(sequenceIndex)}
-          >
-            Remove Sequence
-          </Button>
+          {sequenceFields.length > 1 && (
+            <Button
+              style={{
+                backgroundColor: DeleteColor,
+                color: TextColor,
+              }}
+              onClick={() => removeSequence(sequenceIndex)}
+            >
+              Remove Sequence
+            </Button>
+          )}
           <Grid container spacing={2} key={sequence.id}>
             <Grid item xs={12} md={4}>
               <TextField

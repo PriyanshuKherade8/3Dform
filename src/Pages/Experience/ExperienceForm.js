@@ -284,7 +284,23 @@ const ExperienceForm = () => {
       story_id: "",
       is_active: "",
       story_display_title: "",
-      chapters: [],
+      chapters: [
+        {
+          chapter_id: "",
+          is_first_chapter: "",
+          previous_chapter: "",
+          is_default: "",
+          display_title: "",
+          display_text: "",
+          sequences: [
+            {
+              sequence_id: "",
+              is_first_sequence: "",
+              previous_sequence: "",
+            },
+          ],
+        },
+      ],
     },
   ];
 
